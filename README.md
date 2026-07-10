@@ -31,19 +31,13 @@ danh ban đầu:
    Collaborators) → tìm tên App vừa tạo → thêm với quyền chỉnh sửa (Can
    edit). Nếu bỏ qua bước này, mọi lệnh API sẽ báo lỗi quyền truy cập.
 3. **Thêm App (bot) vào 1 nhóm chat Lark** dùng để nhận thông báo lead
-   mới, rồi lấy `chat_id` của nhóm đó bằng:
-   ```bash
-   LARK_APP_ID=... LARK_APP_SECRET=... node scripts/list-chats.mjs
-   ```
-4. **Tạo bảng phụ "STT Counters"** trong cùng Base — xem mục 2.
-5. **Điền email Lark thật** của từng người phụ trách/liên quan vào
-   `src/config.js` (đang để `TODO_EMAIL_...`) — bot dùng email để tự tra
-   ra ID người dùng qua API, không cần bạn tự tìm ID.
-6. **Khai báo GitHub Actions Secrets** cho repo này (Settings → Secrets and
+   mới (đã có sẵn `chat_id` mặc định trong `src/config.js`:
+   `oc_22558fe11452f8afc13a6b33a41af823` — chỉ cần đổi nếu dùng nhóm khác,
+   lấy chat_id mới bằng `node scripts/list-chats.mjs`).
+4. **Khai báo GitHub Actions Secrets** cho repo này (Settings → Secrets and
    variables → Actions → New repository secret):
    - `LARK_APP_ID`
    - `LARK_APP_SECRET`
-   - `LARK_NOTIFY_CHAT_ID` (chat_id lấy ở bước 3)
 
    ⚠️ App ID/Secret là thông tin nhạy cảm — tuyệt đối không dán vào code,
    commit, hay chat công khai. Chỉ lưu trong GitHub Secrets (đã mã hoá).
@@ -51,7 +45,11 @@ danh ban đầu:
    nhắc **tạo lại (rotate) App Secret mới** trên Lark Developer Console
    sau khi hoàn tất setup, rồi cập nhật lại GitHub Secret.
 
-Sau 6 bước trên, bot chạy hoàn toàn tự động mỗi 5 phút, không cần làm gì
+Email của 7 người phụ trách/liên quan đã được điền sẵn trong
+`src/config.js` — bot tự tra ra ID người dùng qua API mỗi lần chạy, không
+cần bạn tìm ID thủ công.
+
+Sau 4 bước trên, bot chạy hoàn toàn tự động mỗi 5 phút, không cần làm gì
 thêm.
 
 ## 1. Quy tắc phân luồng đã cài đặt
@@ -103,21 +101,14 @@ phân loại (bot)" và báo qua Lark để nhân viên xem lại, tránh gán s
 Ví dụ: lead ở Đà Nẵng, quan tâm trung tâm, là mã đầu tiên của cặp này →
 `TT-430001`.
 
-## 2. Tạo bảng phụ "STT Counters"
+## 2. Cách sinh STT tiếp nối
 
-Tạo 1 bảng mới trong cùng Base (tên đúng `STT Counters`, hoặc đổi tên qua
-biến môi trường `LARK_COUNTER_TABLE_NAME`), 2 cột:
-- `Key` (Text)
-- `STT` (Number, không thập phân)
-
-Không cần tạo sẵn dòng nào — bot tự tạo dòng mới với `STT = 1` khi gặp một
-cặp Nhóm KH + Chi nhánh lần đầu tiên.
-
-Nếu bảng Lead **đã có sẵn Mã KH cũ** theo đúng định dạng `<mã nhóm>-<mã chi
-nhánh><4 số>`, seed STT khởi điểm để không bị trùng mã:
-1. Copy toàn bộ cột `Mã KH` hiện có, dán vào 1 file `.txt` (mỗi dòng 1 mã).
-2. Chạy `node scripts/seed-counters.js duong-dan-file.txt`.
-3. Nhập thủ công kết quả (`Key`, `STT`) vào bảng `STT Counters`.
+Bot **không cần bảng đếm phụ**. Mỗi lần chạy, nó tự quét toàn bộ cột
+`Mã KH` đã có sẵn trong bảng Lead, tìm số lớn nhất theo từng prefix
+`<mã nhóm>-<mã chi nhánh>` rồi +1 — đúng cách nhân viên đang làm thủ công.
+Ví dụ trong nhóm TTAN/HCM (`TT-59...`) mã lớn nhất hiện có là `TT-590047`
+thì lead tiếp theo sẽ được đặt `TT-590048` tự động, không cần setup gì
+thêm cho phần này.
 
 ## 3. Kiểm tra field/quyền truy cập trước khi bật thật
 
@@ -173,10 +164,9 @@ thêm test case mới cho câu input thực tế hay gặp nếu cần.
 ## 7. Việc cần bạn xác nhận/hoàn thiện trước khi chạy thật
 
 - [ ] Thêm App vào Base + vào nhóm chat thông báo (mục 0).
-- [ ] Điền đủ email thật cho 7 người trong `src/config.js` (đang để
-      `TODO_EMAIL_...`).
-- [ ] Khai báo đủ 3 GitHub Secrets (mục 0, bước 6).
-- [ ] Tạo bảng `STT Counters` (mục 2), seed STT nếu đã có Mã KH cũ.
+- [x] Email 7 người phụ trách/liên quan đã điền trong `src/config.js`.
+- [ ] Khai báo đủ 2 GitHub Secrets `LARK_APP_ID`/`LARK_APP_SECRET` (mục 0,
+      bước 4).
 - [ ] Chạy `inspect-base.mjs` đối chiếu tên field/option (mục 3).
 - [ ] Chạy thử `DRY_RUN=true` với vài lead mẫu đủ 3 miền, đủ 7 nhóm trước
       khi để chạy thật (mục 4).

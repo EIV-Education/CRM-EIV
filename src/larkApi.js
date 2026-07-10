@@ -47,14 +47,14 @@ async function larkFetch(path, options = {}) {
   return data.data;
 }
 
-export async function searchRecords(appToken, tableId, filter) {
+export async function searchRecords(appToken, tableId, body = {}) {
   let records = [];
   let pageToken;
   do {
     const qs = pageToken ? `?page_token=${encodeURIComponent(pageToken)}` : '';
     const data = await larkFetch(
       `/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records/search${qs}`,
-      { method: 'POST', body: JSON.stringify(filter ? { filter } : {}) },
+      { method: 'POST', body: JSON.stringify(body) },
     );
     records = records.concat(data.items || []);
     pageToken = data.has_more ? data.page_token : undefined;
@@ -67,18 +67,6 @@ export async function updateRecord(appToken, tableId, recordId, fields) {
     method: 'PUT',
     body: JSON.stringify({ fields }),
   });
-}
-
-export async function createRecord(appToken, tableId, fields) {
-  return larkFetch(`/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records`, {
-    method: 'POST',
-    body: JSON.stringify({ fields }),
-  });
-}
-
-export async function listTables(appToken) {
-  const data = await larkFetch(`/open-apis/bitable/v1/apps/${appToken}/tables?page_size=100`, { method: 'GET' });
-  return data.items || [];
 }
 
 export async function sendTextMessage(chatId, text) {

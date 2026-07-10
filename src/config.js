@@ -3,14 +3,11 @@
 export const LARK_BASE_APP_TOKEN = process.env.LARK_BASE_APP_TOKEN || 'FfIXb8Tf2aEyX3seWEllZof9gtc';
 export const LARK_LEAD_TABLE_ID = process.env.LARK_LEAD_TABLE_ID || 'tblckO9AXEQ4pLvP';
 
-// Ten bang phu dung de luu STT hien tai theo tung cap Nhom KH + Chi nhanh.
-// Tao thu cong 1 lan trong Base voi 2 cot: "Key" (Text), "STT" (Number).
-export const COUNTER_TABLE_NAME = process.env.LARK_COUNTER_TABLE_NAME || 'STT Counters';
-
 // chat_id cua nhom Lark se nhan thong bao lead moi / lead can xem thu cong.
 // Lay bang cach them bot vao nhom roi goi GET /open-apis/im/v1/chats (xem
-// scripts/list-chats.mjs), hoac xem README.
-export const NOTIFY_CHAT_ID = process.env.LARK_NOTIFY_CHAT_ID || '';
+// scripts/list-chats.mjs), hoac xem README. Co the override bang bien moi
+// truong LARK_NOTIFY_CHAT_ID (vi du khi doi sang nhom khac).
+export const NOTIFY_CHAT_ID = process.env.LARK_NOTIFY_CHAT_ID || 'oc_22558fe11452f8afc13a6b33a41af823';
 
 // Ten cot (field) trong bang Lead cua Lark Base.
 // QUAN TRONG: sua lai cho dung ten cot thuc te trong Base truoc khi dung
@@ -64,8 +61,8 @@ export const BRANCHES = [
     // email dung de tra ra open_id that qua Lark Contact API luc chay
     // (xem src/larkApi.js resolveOpenIdsByEmail). DIEN DUNG EMAIL LARK
     // cua tung nguoi truoc khi chay that.
-    phuTrach: [{ email: 'TODO_EMAIL_PHAM_THI_HONG_VAN', name: 'Phạm Thị Hồng Vân-CM ĐN' }],
-    lienQuan: [{ email: 'TODO_EMAIL_LY_HOANG_THUC_LINH', name: 'Lý Hoàng Thục Linh' }],
+    phuTrach: [{ email: 'customerservicedn@eiv.edu.vn', name: 'Phạm Thị Hồng Vân-CM ĐN' }],
+    lienQuan: [{ email: 'linhlht@eiv.edu.vn', name: 'Lý Hoàng Thục Linh' }],
   },
   {
     code: 'EIV_HCM',
@@ -97,10 +94,10 @@ export const BRANCHES = [
       'ca mau',
     ],
     phuTrach: [
-      { email: 'TODO_EMAIL_NGUYEN_TUAN_KHOI', name: 'Nguyễn Tuấn Khôi' },
-      { email: 'TODO_EMAIL_PHAN_THI_THUY_LINH', name: 'Phan Thị Thùy Linh' },
+      { email: 'lead.hcm@eiv.edu.vn', name: 'Nguyễn Tuấn Khôi-Lead HCM' },
+      { email: 'customerservice.hcm@eiv.edu.vn', name: 'Phan Thị Thùy Linh-SALE HCM' },
     ],
-    lienQuan: [{ email: 'TODO_EMAIL_NGUYEN_TUAN_KHOI', name: 'Nguyễn Tuấn Khôi' }],
+    lienQuan: [{ email: 'lead.hcm@eiv.edu.vn', name: 'Nguyễn Tuấn Khôi-Lead HCM' }],
   },
   {
     code: 'EIV_HN',
@@ -133,10 +130,10 @@ export const BRANCHES = [
       'lang son',
       'ha giang',
     ],
-    phuTrach: [{ email: 'TODO_EMAIL_HOANG_HAI_YEN', name: 'Hoàng Hải Yến-Sale HN' }],
+    phuTrach: [{ email: 'salehn3@eiv.edu.vn', name: 'Hoàng Hải Yến-Sale HN' }],
     lienQuan: [
-      { email: 'TODO_EMAIL_TRINH_THU_QUYNH', name: 'Trịnh Thu Quỳnh' },
-      { email: 'TODO_EMAIL_TRAN_THUY_GIANG', name: 'Trần Thùy Giang' },
+      { email: 'salehn@eiv.edu.vn', name: 'Trịnh Thu Quỳnh-Lead KD HN' },
+      { email: 'giangtt@eiv.edu.vn', name: 'Trần Thùy Giang' },
     ],
   },
 ];

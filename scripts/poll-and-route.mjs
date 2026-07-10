@@ -1,18 +1,20 @@
 // Script chinh cua bot: quet cac lead dang o Nhom KH = CHO PHAN LOAI,
 // phan loai va cap nhat truc tiep qua Lark Open API. Duoc goi dinh ky boi
-// GitHub Actions workflow .github/workflows/lead-routing.yml (xem README
-// muc "Trien khai bang GitHub Actions").
+// GitHub Actions workflow .github/workflows/lead-routing.yml.
+//
+// Ma KH duoc sinh tiep noi bang cach quet toan bo cot "Ma KH" da co san
+// trong bang Lead (khong can bang dem phu) - tim so lon nhat cho tung
+// prefix <ma nhom>-<ma chi nhanh> roi +1, giong cach nhan vien dang lam
+// thu cong.
 //
 // Chay thu an toan (khong ghi gi vao Base, chi in ra console):
 //   DRY_RUN=true node scripts/poll-and-route.mjs
 
-import { classifyLead } from '../src/routing.js';
-import { BRANCHES, LARK_BASE_APP_TOKEN, LARK_LEAD_TABLE_ID, COUNTER_TABLE_NAME, NOTIFY_CHAT_ID, FIELD_NAMES, PENDING_GROUP_LABEL } from '../src/config.js';
+import { classifyLead, nextStt } from '../src/routing.js';
+import { BRANCHES, LARK_BASE_APP_TOKEN, LARK_LEAD_TABLE_ID, NOTIFY_CHAT_ID, FIELD_NAMES, PENDING_GROUP_LABEL } from '../src/config.js';
 import {
   searchRecords,
   updateRecord,
-  createRecord,
-  listTables,
   sendTextMessage,
   resolveOpenIdsByEmail,
   extractText,
@@ -24,37 +26,10 @@ function log(...args) {
   console.log(new Date().toISOString(), ...args);
 }
 
-async function findCounterTableId() {
-  const tables = await listTables(LARK_BASE_APP_TOKEN);
-  const found = tables.find((t) => t.name === COUNTER_TABLE_NAME);
-  if (!found) {
-    throw new Error(
-      `Khong tim thay bang "${COUNTER_TABLE_NAME}". Tao thu cong 1 lan trong Base voi 2 cot Key (Text) va STT (Number) - xem README.`,
-    );
-  }
-  return found.table_id;
-}
-
-async function getNextStt(counterTableId, prefix) {
-  const rows = await searchRecords(LARK_BASE_APP_TOKEN, counterTableId, {
-    conjunction: 'and',
-    conditions: [{ field_name: 'Key', operator: 'is', value: [prefix] }],
+async function fetchAllRecords() {
+  return searchRecords(LARK_BASE_APP_TOKEN, LARK_LEAD_TABLE_ID, {
+    field_names: [FIELD_NAMES.maKH, FIELD_NAMES.nhomKH, FIELD_NAMES.diaChi, FIELD_NAMES.quanTam, FIELD_NAMES.ghiChuBot],
   });
-
-  if (rows.length === 0) {
-    if (!DRY_RUN) {
-      await createRecord(LARK_BASE_APP_TOKEN, counterTableId, { Key: prefix, STT: 1 });
-    }
-    return 1;
-  }
-
-  const row = rows[0];
-  const current = Number(row.fields.STT) || 0;
-  const next = current + 1;
-  if (!DRY_RUN) {
-    await updateRecord(LARK_BASE_APP_TOKEN, counterTableId, row.record_id, { STT: next });
-  }
-  return next;
 }
 
 async function resolveAllEmails() {
@@ -81,15 +56,18 @@ function peopleField(people, emailToOpenId) {
 async function main() {
   log(DRY_RUN ? 'Chay o che do DRY_RUN (khong ghi du lieu that).' : 'Bat dau quet lead cho phan loai...');
 
-  const counterTableId = await findCounterTableId();
   const emailToOpenId = await resolveAllEmails();
 
-  const pendingLeads = await searchRecords(LARK_BASE_APP_TOKEN, LARK_LEAD_TABLE_ID, {
-    conjunction: 'and',
-    conditions: [{ field_name: FIELD_NAMES.nhomKH, operator: 'is', value: [PENDING_GROUP_LABEL] }],
-  });
+  const allRecords = await fetchAllRecords();
+  const existingMaKH = allRecords
+    .map((r) => extractText(r.fields[FIELD_NAMES.maKH]))
+    .filter(Boolean);
 
-  log(`Tim thay ${pendingLeads.length} lead dang cho phan loai.`);
+  const pendingLeads = allRecords.filter(
+    (r) => extractText(r.fields[FIELD_NAMES.nhomKH]) === PENDING_GROUP_LABEL,
+  );
+
+  log(`Tim thay ${pendingLeads.length} lead dang cho phan loai (tren tong ${allRecords.length} lead).`);
 
   for (const record of pendingLeads) {
     const diaChi = extractText(record.fields[FIELD_NAMES.diaChi]);
@@ -118,8 +96,9 @@ async function main() {
     }
 
     const branch = BRANCHES.find((b) => b.code === result.chiNhanhCode);
-    const stt = await getNextStt(counterTableId, result.prefix);
+    const stt = nextStt(existingMaKH, result.prefix);
     const maKH = `${result.prefix}${String(stt).padStart(4, '0')}`;
+    existingMaKH.push(maKH); // danh truoc de lead tiep theo trong cung lan chay khong bi trung ma
 
     log(`Phan luong lead ${record.record_id} -> ${maKH} / ${result.chiNhanhLabel} / ${result.nhomKHLabel}`);
 
