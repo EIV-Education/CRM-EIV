@@ -1,0 +1,10 @@
+{
+  "name": "eiv-lark-lead-routing-bot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Bo may phan luong lead cho CRM tren Lark Base cua EIV Education",
+  "scripts": {
+    "test": "node --test test/"
+  }
+}
