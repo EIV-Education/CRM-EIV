@@ -54,25 +54,26 @@ thêm.
 
 ## 1. Quy tắc phân luồng đã cài đặt
 
-**Chi nhánh** (theo `Địa chỉ`, so khớp theo tên tỉnh/thành, không phân biệt
-dấu/hoa-thường):
+**Chi nhánh**: nguồn chính là field Single Select **"Tỉnh/Thành phố"** (đã
+chuẩn hoá sẵn 51 giá trị trong Base — khớp trực tiếp, không cần đoán chữ),
+chỉ fallback sang parse text tự do ở "Địa chỉ" khi "Tỉnh/Thành phố" trống:
 - Đà Nẵng + miền Trung/Tây Nguyên → `EIV ĐN` (mã `43`)
 - TP.HCM + miền Nam → `EIV HCM` (mã `59`)
 - Hà Nội + miền Bắc → `EIV HN` (mã `29`)
 
-Danh sách tỉnh cho từng chi nhánh nằm trong `src/config.js`
-(`BRANCHES[].provinces`). **Việt Nam đã có đợt sáp nhập tỉnh 2025 — hãy rà
-lại danh sách này cho khớp tên tỉnh/thành hiện hành trước khi dùng chính
-thức.**
+Bảng ánh xạ đầy đủ (từng tỉnh/thành → chi nhánh) nằm trong `src/config.js`
+(`PROVINCE_BRANCH_MAP`); danh sách dự phòng cho "Địa chỉ" nằm trong
+`BRANCHES[].provinces`. Hai giá trị `N/a` và `Đài Loan` cố tình để không
+khớp (cần xem thủ công).
 
-**Nhóm KH** (theo `Quan tâm`, xét theo đúng thứ tự ưu tiên bên dưới, dừng ở
-điều kiện đầu tiên khớp):
-1. Có "trường học" / "cung cấp giáo viên" → `TRUONG HOC`
+**Nhóm KH** (theo field "Mô tả", xét theo đúng thứ tự ưu tiên bên dưới,
+dừng ở điều kiện đầu tiên khớp):
+1. Có "trường học" / "cung cấp giáo viên" → `TRƯỜNG HỌC`
 2. Có "trung tâm" → `TTAN`
 3. Có tín hiệu 1 kèm 1 (one-to-one, 1-1, 1 kèm 1...) **và** "online"/"trực
    tuyến" → `OTO-ONLINE`
 4. Có tín hiệu 1 kèm 1 **và** "offline"/"trực tiếp" → `OTO-OFFLINE`
-5. Có "doanh nghiệp" → `DOANH NGHIEP`
+5. Có "doanh nghiệp" → `DOANH NGHIỆP`
 6. Có "kid"/"bé"/"trẻ em" **và** "online"/"trực tuyến" → `KIDS-ONL`
 7. Có "kid"/"bé"/"trẻ em" **và** "tại nhà" → `KIDS-OFF`
 
@@ -80,19 +81,21 @@ Nếu mô tả có "1 kèm 1" nhưng không rõ online/offline (hoặc có "kid"
 không rõ hình thức), bot **không** tự đoán — ghi lý do vào cột "Ghi chú
 phân loại (bot)" và báo qua Lark để nhân viên xem lại, tránh gán sai nhóm.
 
-> ⚠️ Nhãn (label) của từng nhóm trong `src/config.js` (`TRUONG HOC`,
-> `TTAN`, `OTO-ONLINE`, `OTO-OFFLINE`, `DOANH NGHIEP`, `KIDS-ONL`,
-> `KIDS-OFF`) **phải khớp chính xác từng ký tự** với option đã tạo sẵn
-> trong trường Single Select "Nhóm KH" của bảng — chạy
-> `node scripts/inspect-base.mjs` (mục 3) để đối chiếu.
+> ⚠️ Field **"Nhóm KH" trong bảng Lead là Link (liên kết tới bảng riêng
+> `Nhóm KH`)**, không phải Single Select — bot tự tra `record_id` tương
+> ứng với từng nhãn qua bảng đó mỗi lần chạy (`NHOM_KH_LINK_TABLE_ID` +
+> `NHOM_KH_PRIMARY_FIELD` trong `src/config.js`), không cần bạn cấu hình
+> gì thêm. Nhãn 7 nhóm trong `src/config.js` (`GROUPS[].label`) đã đối
+> chiếu đúng với dữ liệu thật trong bảng liên kết đó bằng
+> `node scripts/inspect-base.mjs`.
 
 **Mã KH** = `<mã nhóm KH>-<mã chi nhánh><STT 4 số>`
 
 | Nhóm KH | Mã nhóm |
 |---|---|
 | TTAN | TT |
-| TRUONG HOC | TH |
-| DOANH NGHIEP | DN |
+| TRƯỜNG HỌC | TH |
+| DOANH NGHIỆP | DN |
 | KIDS-ONL | KIDS-ONL |
 | KIDS-OFF | KIDS-OFF |
 | OTO-ONLINE | OTO-ONL |
@@ -116,9 +119,19 @@ thêm cho phần này.
 LARK_APP_ID=... LARK_APP_SECRET=... node scripts/inspect-base.mjs
 ```
 
-In ra toàn bộ tên trường + option hiện có trong bảng Lead, để đối chiếu với
-`src/config.js` (`FIELD_NAMES`, `GROUPS[].label`, `BRANCHES[].label`). Nếu
-lệnh báo lỗi quyền truy cập, quay lại bước 2 ở mục 0 (thêm App vào Base).
+In ra toàn bộ tên trường, option, và (với field Link như "Nhóm KH") cả
+record_id của bảng liên kết, để đối chiếu với `src/config.js`
+(`FIELD_NAMES`, `GROUPS[].label`, `BRANCHES[].label`). Nếu lệnh báo lỗi
+quyền truy cập, quay lại bước 2 ở mục 0 (thêm App vào Base). Đã chạy và
+đối chiếu 1 lần — tên field/nhãn hiện tại trong `config.js` đã khớp với
+Base thật tính đến thời điểm setup.
+
+Field **"Ghi chú phân loại (bot)"** (Text) hiện **chưa tồn tại** trong
+bảng Lead — bot dùng field này để tránh gửi lặp thông báo cho cùng 1 lead
+chưa phân loại được. Tự tạo field Text này trong Base (tên phải khớp
+chính xác `FIELD_NAMES.ghiChuBot` trong `src/config.js`) trước khi chạy
+thật; nếu bỏ qua, riêng phần lead không phân loại được sẽ báo lỗi ghi
+field (không ảnh hưởng tới các lead phân loại thành công).
 
 ## 4. Chạy thử an toàn rồi mới bật lịch tự động
 
@@ -163,13 +176,15 @@ thêm test case mới cho câu input thực tế hay gặp nếu cần.
 
 ## 7. Việc cần bạn xác nhận/hoàn thiện trước khi chạy thật
 
-- [ ] Thêm App vào Base + vào nhóm chat thông báo (mục 0).
+- [x] Thêm App vào Base + vào nhóm chat thông báo (mục 0).
 - [x] Email 7 người phụ trách/liên quan đã điền trong `src/config.js`.
-- [ ] Khai báo đủ 2 GitHub Secrets `LARK_APP_ID`/`LARK_APP_SECRET` (mục 0,
+- [x] Khai báo đủ 2 GitHub Secrets `LARK_APP_ID`/`LARK_APP_SECRET` (mục 0,
       bước 4).
-- [ ] Chạy `inspect-base.mjs` đối chiếu tên field/option (mục 3).
+- [x] Đã chạy `inspect-base.mjs`, đối chiếu và sửa tên field/nhãn nhóm cho
+      khớp Base thật (mục 1, mục 3).
+- [ ] Tạo field Text **"Ghi chú phân loại (bot)"** trong bảng Lead (mục 3).
 - [ ] Chạy thử `DRY_RUN=true` với vài lead mẫu đủ 3 miền, đủ 7 nhóm trước
       khi để chạy thật (mục 4).
 - [ ] Rà lại danh sách tỉnh/thành theo địa giới hành chính hiện hành (sau
-      sáp nhập 2025) trong `provinces` của từng chi nhánh.
+      sáp nhập 2025) trong `PROVINCE_BRANCH_MAP`/`provinces`.
 - [ ] Cân nhắc rotate App Secret sau khi setup xong (đã dán trong chat).

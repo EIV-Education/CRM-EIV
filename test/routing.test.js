@@ -32,6 +32,28 @@ test('matchBranch: khong nhan dien duoc tra ve null', () => {
   assert.equal(b, null);
 });
 
+test('matchBranch: uu tien Tinh/Thanh pho (Single Select) khi co', () => {
+  const b = matchBranch('Dia chi khong ro rang gi ca', 'ĐÀ NẴNG');
+  assert.equal(b.code, 'EIV_DN');
+});
+
+test('matchBranch: Tinh/Thanh pho khop dung tung mien', () => {
+  assert.equal(matchBranch('', 'HỒ CHÍ MINH').code, 'EIV_HCM');
+  assert.equal(matchBranch('', 'HÀ NỘI').code, 'EIV_HN');
+  assert.equal(matchBranch('', 'BÀ RỊA-VŨNG TÀU').code, 'EIV_HCM');
+  assert.equal(matchBranch('', 'HẠ LONG').code, 'EIV_HN');
+});
+
+test('matchBranch: Tinh/Thanh pho la gia tri la (N/a, Dai Loan) -> null', () => {
+  assert.equal(matchBranch('', 'N/a'), null);
+  assert.equal(matchBranch('', 'Đài Loan'), null);
+});
+
+test('matchBranch: fallback ve Dia chi khi Tinh/Thanh pho rong', () => {
+  const b = matchBranch('123 Le Loi, Da Nang', '');
+  assert.equal(b.code, 'EIV_DN');
+});
+
 test('matchGroup: truong hoc', () => {
   const g = matchGroup('Can giao vien tieng Anh cho truong hoc');
   assert.equal(g.code, 'TRUONG_HOC');
@@ -60,6 +82,12 @@ test('matchGroup: 1 kem 1 nhung khong ro hinh thuc -> null (can xem lai thu cong
 test('matchGroup: doanh nghiep', () => {
   const g = matchGroup('Cong ty can dao tao tieng Anh doanh nghiep cho nhan vien');
   assert.equal(g.code, 'DOANH_NGHIEP');
+  assert.equal(g.label, 'DOANH NGHIỆP');
+});
+
+test('matchGroup: truong hoc co label chinh xac co dau', () => {
+  const g = matchGroup('Can giao vien tieng Anh cho truong hoc');
+  assert.equal(g.label, 'TRƯỜNG HỌC');
 });
 
 test('matchGroup: be hoc online -> KIDS_ONL', () => {
@@ -112,7 +140,7 @@ test('routeLead: end-to-end tra ve Ma KH + nguoi phu trach/lien quan', () => {
   );
   assert.equal(r.matched, true);
   assert.equal(r.chiNhanh, 'EIV HN');
-  assert.equal(r.nhomKH, 'TRUONG HOC');
+  assert.equal(r.nhomKH, 'TRƯỜNG HỌC');
   assert.equal(r.maKH, 'TH-290002');
   assert.equal(r.nguoiPhuTrach.length, 1);
   assert.equal(r.nguoiLienQuan.length, 2);

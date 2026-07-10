@@ -1,5 +1,5 @@
 import { normalizeVN } from './text.js';
-import { BRANCHES, GROUPS } from './config.js';
+import { BRANCHES, GROUPS, PROVINCE_BRANCH_MAP } from './config.js';
 
 function escapeRegExp(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -12,7 +12,16 @@ function containsPhrase(text, phrase) {
   return re.test(text);
 }
 
-export function matchBranch(diaChi) {
+// Uu tien tra chi nhanh tu gia tri Single Select "Tinh/Thanh pho" (chinh
+// xac, controlled vocabulary) - chi khi khong co/khong khop moi fallback
+// sang parse text tu do o Dia chi.
+export function matchBranch(diaChi, tinhThanh) {
+  const tt = normalizeVN(tinhThanh);
+  if (tt) {
+    const code = PROVINCE_BRANCH_MAP[tt];
+    if (code) return BRANCHES.find((b) => b.code === code) || null;
+  }
+
   const t = normalizeVN(diaChi);
   if (!t) return null;
   for (const branch of BRANCHES) {
@@ -79,8 +88,8 @@ export function buildMaKH(group, branch, existingMaKHList) {
 // nhom KH tu 2 truong dau vao, khong dong cham toi toan bang (viec sinh
 // Ma KH/STT va gan nguoi phu trach duoc lam bang cac action co san cua
 // Lark - xem README).
-export function classifyLead({ diaChi, quanTam }) {
-  const branch = matchBranch(diaChi);
+export function classifyLead({ diaChi, quanTam, tinhThanh }) {
+  const branch = matchBranch(diaChi, tinhThanh);
   const group = matchGroup(quanTam);
   const matched = Boolean(branch && group);
 
@@ -105,8 +114,8 @@ export function classifyLead({ diaChi, quanTam }) {
 
 // Ham tien ich dung khi test/seed local: phan loai day du + sinh Ma KH
 // tu danh sach Ma KH hien co truyen vao.
-export function routeLead({ diaChi, quanTam }, existingMaKHList = []) {
-  const branch = matchBranch(diaChi);
+export function routeLead({ diaChi, quanTam, tinhThanh }, existingMaKHList = []) {
+  const branch = matchBranch(diaChi, tinhThanh);
   const group = matchGroup(quanTam);
 
   if (!branch || !group) {
