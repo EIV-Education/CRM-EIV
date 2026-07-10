@@ -39,10 +39,33 @@ async function main() {
     process.exit(1);
   }
 
+  const linkFields = [];
   for (const field of data.data.items || []) {
     console.log(`- ${field.field_name} (type=${field.type})`);
     if (field.property?.options) {
       console.log(`    options: ${field.property.options.map((o) => o.name).join(', ')}`);
+    }
+    if (field.type === 18) {
+      console.log(`    property: ${JSON.stringify(field.property)}`);
+      linkFields.push(field);
+    }
+  }
+
+  for (const field of linkFields) {
+    const linkedTableId = field.property?.table_id;
+    if (!linkedTableId) continue;
+    console.log(`\nBang lien ket cua field "${field.field_name}" (table_id=${linkedTableId}):`);
+    const linkedRes = await fetch(
+      `${LARK_HOST}/open-apis/bitable/v1/apps/${LARK_BASE_APP_TOKEN}/tables/${linkedTableId}/records?page_size=100`,
+      { headers },
+    );
+    const linkedData = await linkedRes.json();
+    if (linkedData.code !== 0) {
+      console.error(`  Loi ${linkedData.code}: ${linkedData.msg}`);
+      continue;
+    }
+    for (const rec of linkedData.data.items || []) {
+      console.log(`  record_id=${rec.record_id} fields=${JSON.stringify(rec.fields)}`);
     }
   }
 
