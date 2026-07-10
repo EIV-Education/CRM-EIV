@@ -1,16 +1,34 @@
+// app_token cua Base va table_id cua bang Lead, lay tu URL Base:
+// https://eiveducation.sg.larksuite.com/base/<APP_TOKEN>?table=<TABLE_ID>&view=...
+export const LARK_BASE_APP_TOKEN = process.env.LARK_BASE_APP_TOKEN || 'FfIXb8Tf2aEyX3seWEllZof9gtc';
+export const LARK_LEAD_TABLE_ID = process.env.LARK_LEAD_TABLE_ID || 'tblckO9AXEQ4pLvP';
+
+// Ten bang phu dung de luu STT hien tai theo tung cap Nhom KH + Chi nhanh.
+// Tao thu cong 1 lan trong Base voi 2 cot: "Key" (Text), "STT" (Number).
+export const COUNTER_TABLE_NAME = process.env.LARK_COUNTER_TABLE_NAME || 'STT Counters';
+
+// chat_id cua nhom Lark se nhan thong bao lead moi / lead can xem thu cong.
+// Lay bang cach them bot vao nhom roi goi GET /open-apis/im/v1/chats (xem
+// scripts/list-chats.mjs), hoac xem README.
+export const NOTIFY_CHAT_ID = process.env.LARK_NOTIFY_CHAT_ID || '';
+
 // Ten cot (field) trong bang Lead cua Lark Base.
-// QUAN TRONG: sua lai cho dung ten cot thuc te trong Base truoc khi dung.
+// QUAN TRONG: sua lai cho dung ten cot thuc te trong Base truoc khi dung
+// (co the override tung field bang bien moi truong cung ten, vi du FIELD_DIA_CHI).
 export const FIELD_NAMES = {
-  diaChi: 'Địa chỉ',
-  quanTam: 'Quan tâm',
-  nhomKH: 'Nhóm KH',
-  chiNhanh: 'Chi nhánh',
-  nguoiPhuTrach: 'Người phụ trách',
-  nguoiLienQuan: 'Người liên quan',
-  maKH: 'Mã KH',
+  diaChi: process.env.FIELD_DIA_CHI || 'Địa chỉ',
+  quanTam: process.env.FIELD_QUAN_TAM || 'Quan tâm',
+  nhomKH: process.env.FIELD_NHOM_KH || 'Nhóm KH',
+  chiNhanh: process.env.FIELD_CHI_NHANH || 'Chi nhánh',
+  nguoiPhuTrach: process.env.FIELD_NGUOI_PHU_TRACH || 'Người phụ trách',
+  nguoiLienQuan: process.env.FIELD_NGUOI_LIEN_QUAN || 'Người liên quan',
+  maKH: process.env.FIELD_MA_KH || 'Mã KH',
+  // Field Text dung de bot ghi ly do khi khong phan loai duoc, kiem tra
+  // truoc khi gui lai thong bao tranh spam nhieu lan cho cung 1 lead.
+  ghiChuBot: process.env.FIELD_GHI_CHU_BOT || 'Ghi chú phân loại (bot)',
 };
 
-export const PENDING_GROUP_LABEL = 'CHỜ PHÂN LOẠI';
+export const PENDING_GROUP_LABEL = process.env.PENDING_GROUP_LABEL || 'CHỜ PHÂN LOẠI';
 
 // Danh sach tinh/thanh (da bo dau, viet thuong) de nhan dien dia chi.
 // Co the chinh sua/bo sung cho phu hop voi cach nhap dia chi thuc te.
@@ -43,12 +61,11 @@ export const BRANCHES = [
       'nghe an',
       'ha tinh',
     ],
-    // Nguoi phu trach / nguoi lien quan mac dinh chon truc tiep qua
-    // people-picker cua Lark khi cau hinh action "Update record", khong
-    // can dung id ben duoi. Id chi de tham khao / dung cho phuong an
-    // goi API ngoai (xem README).
-    phuTrach: [{ id: '42g8fg61', name: 'Phạm Thị Hồng Vân-CM ĐN' }],
-    lienQuan: [{ id: '1b57762b', name: 'Lý Hoàng Thục Linh' }],
+    // email dung de tra ra open_id that qua Lark Contact API luc chay
+    // (xem src/larkApi.js resolveOpenIdsByEmail). DIEN DUNG EMAIL LARK
+    // cua tung nguoi truoc khi chay that.
+    phuTrach: [{ email: 'TODO_EMAIL_PHAM_THI_HONG_VAN', name: 'Phạm Thị Hồng Vân-CM ĐN' }],
+    lienQuan: [{ email: 'TODO_EMAIL_LY_HOANG_THUC_LINH', name: 'Lý Hoàng Thục Linh' }],
   },
   {
     code: 'EIV_HCM',
@@ -79,12 +96,11 @@ export const BRANCHES = [
       'bac lieu',
       'ca mau',
     ],
-    // TODO: dien id Lark that (open_id) neu dung phuong an goi API ngoai.
     phuTrach: [
-      { id: 'TODO_ID_NGUYEN_TUAN_KHOI', name: 'Nguyễn Tuấn Khôi' },
-      { id: 'TODO_ID_PHAN_THI_THUY_LINH', name: 'Phan Thị Thùy Linh' },
+      { email: 'TODO_EMAIL_NGUYEN_TUAN_KHOI', name: 'Nguyễn Tuấn Khôi' },
+      { email: 'TODO_EMAIL_PHAN_THI_THUY_LINH', name: 'Phan Thị Thùy Linh' },
     ],
-    lienQuan: [{ id: 'TODO_ID_NGUYEN_TUAN_KHOI', name: 'Nguyễn Tuấn Khôi' }],
+    lienQuan: [{ email: 'TODO_EMAIL_NGUYEN_TUAN_KHOI', name: 'Nguyễn Tuấn Khôi' }],
   },
   {
     code: 'EIV_HN',
@@ -117,11 +133,10 @@ export const BRANCHES = [
       'lang son',
       'ha giang',
     ],
-    phuTrach: [{ id: '62dfgc39', name: 'Hoàng Hải Yến-Sale HN' }],
-    // TODO: dien id Lark that (open_id) neu dung phuong an goi API ngoai.
+    phuTrach: [{ email: 'TODO_EMAIL_HOANG_HAI_YEN', name: 'Hoàng Hải Yến-Sale HN' }],
     lienQuan: [
-      { id: 'TODO_ID_TRINH_THU_QUYNH', name: 'Trịnh Thu Quỳnh' },
-      { id: 'TODO_ID_TRAN_THUY_GIANG', name: 'Trần Thùy Giang' },
+      { email: 'TODO_EMAIL_TRINH_THU_QUYNH', name: 'Trịnh Thu Quỳnh' },
+      { email: 'TODO_EMAIL_TRAN_THUY_GIANG', name: 'Trần Thùy Giang' },
     ],
   },
 ];

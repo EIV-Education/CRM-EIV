@@ -1,27 +1,58 @@
 # Bot phân luồng lead CRM trên Lark Base (EIV Education)
 
-Bot chạy hoàn toàn bằng tính năng **Automation** có sẵn của Lark Base (không
-cần server ngoài, không cần App ID/Secret). Khi có lead mới rơi vào nhóm KH
-`CHỜ PHÂN LOẠI`, Automation sẽ:
+Bot tự động đọc lead mới (Nhóm KH = `CHỜ PHÂN LOẠI`) trong bảng Lead trên
+Lark Base, phân loại Chi nhánh + Nhóm KH, sinh Mã KH, gán Người phụ
+trách/Người liên quan, và gửi thông báo trên Lark — **chạy hoàn toàn tự
+động, không cần bấm tay trong Lark mỗi khi có lead mới.**
 
-1. Gửi thông báo lead mới trên Lark.
-2. Đọc `Địa chỉ` + `Quan tâm` của lead, chạy script phân loại để xác định
-   Chi nhánh và Nhóm KH.
-3. Rẽ nhánh theo chi nhánh xác định được, gán **Người phụ trách / Người liên
-   quan** (chọn sẵn qua people-picker của Lark — không cần ID người dùng).
-4. Sinh **Mã KH** nối tiếp theo đúng công thức, dùng một bảng đếm phụ +
-   action có sẵn (Find record / Update record) — không cần script đọc toàn
-   bộ bảng.
-5. Nếu không xác định được chi nhánh và/hoặc nhóm KH, gửi thông báo để nhân
-   viên phân loại thủ công, giữ nguyên `CHỜ PHÂN LOẠI`.
+Có 2 cách triển khai trong repo này:
 
-Repo này chứa:
-- `src/config.js`, `src/routing.js`, `src/text.js` — logic phân loại thuần
-  JS, có unit test (`test/routing.test.js`, chạy `npm test`).
-- `src/larkScript.js` — bản đóng gói sẵn (không dùng `import`) để **copy
-  trực tiếp** vào action "Chạy tập lệnh" (Run script) trong Automation.
-- `scripts/seed-counters.js` — công cụ chạy local 1 lần để tính STT khởi
-  điểm cho bảng đếm, dựa trên Mã KH hiện có trong bảng.
+- **Cách A — GitHub Actions (khuyến nghị, mặc định của repo này):** một
+  script Node chạy định kỳ mỗi 5 phút trên GitHub, gọi thẳng Lark Open API
+  để đọc/ghi record và gửi tin nhắn. Không cần cấu hình Automation trong
+  Lark Base. Xem mục 1-4.
+- **Cách B — Lark Base Automation (không cần server, nhưng cần bấm tay
+  cấu hình 1 lần trong Lark):** dùng action "Run script" + rẽ nhánh có sẵn
+  của Lark Base. Xem mục 5 (Phụ lục).
+
+## 0. Việc cần bạn làm 1 lần trước khi bot chạy được (không tránh được)
+
+Đây là các bước bắt buộc phải thao tác thủ công trên Lark — không nền tảng
+nào (kể cả Claude) có thể làm thay qua API, vì đây là bước cấp quyền/định
+danh ban đầu:
+
+1. **Tạo Lark Custom App** trên Lark Developer Console (đã có: App ID
+   `cli_aab0e555bff85eea`). Cấp các quyền (Permissions/Scopes):
+   - `bitable:app` (đọc & ghi Bitable)
+   - `im:message` / `im:message:send_as_bot` (gửi tin nhắn)
+   - `contact:user.email:readonly` hoặc quyền tương đương để tra open_id
+     theo email (dùng batch_get_id)
+2. **Thêm App vào Base** này: mở Base → nút chia sẻ/thành viên (Share/
+   Collaborators) → tìm tên App vừa tạo → thêm với quyền chỉnh sửa (Can
+   edit). Nếu bỏ qua bước này, mọi lệnh API sẽ báo lỗi quyền truy cập.
+3. **Thêm App (bot) vào 1 nhóm chat Lark** dùng để nhận thông báo lead
+   mới, rồi lấy `chat_id` của nhóm đó bằng:
+   ```bash
+   LARK_APP_ID=... LARK_APP_SECRET=... node scripts/list-chats.mjs
+   ```
+4. **Tạo bảng phụ "STT Counters"** trong cùng Base — xem mục 2.
+5. **Điền email Lark thật** của từng người phụ trách/liên quan vào
+   `src/config.js` (đang để `TODO_EMAIL_...`) — bot dùng email để tự tra
+   ra ID người dùng qua API, không cần bạn tự tìm ID.
+6. **Khai báo GitHub Actions Secrets** cho repo này (Settings → Secrets and
+   variables → Actions → New repository secret):
+   - `LARK_APP_ID`
+   - `LARK_APP_SECRET`
+   - `LARK_NOTIFY_CHAT_ID` (chat_id lấy ở bước 3)
+
+   ⚠️ App ID/Secret là thông tin nhạy cảm — tuyệt đối không dán vào code,
+   commit, hay chat công khai. Chỉ lưu trong GitHub Secrets (đã mã hoá).
+   Vì App Secret từng được dán trực tiếp trong cuộc trò chuyện này, cân
+   nhắc **tạo lại (rotate) App Secret mới** trên Lark Developer Console
+   sau khi hoàn tất setup, rồi cập nhật lại GitHub Secret.
+
+Sau 6 bước trên, bot chạy hoàn toàn tự động mỗi 5 phút, không cần làm gì
+thêm.
 
 ## 1. Quy tắc phân luồng đã cài đặt
 
@@ -31,10 +62,10 @@ dấu/hoa-thường):
 - TP.HCM + miền Nam → `EIV HCM` (mã `59`)
 - Hà Nội + miền Bắc → `EIV HN` (mã `29`)
 
-Danh sách tỉnh cho từng chi nhánh nằm trong `src/config.js` (`BRANCHES[].provinces`)
-và trùng khớp trong `src/larkScript.js`. **Vietnam đã có đợt sáp nhập tỉnh
-2025 — hãy rà lại danh sách này cho khớp tên tỉnh/thành hiện hành trước khi
-đưa vào dùng chính thức.**
+Danh sách tỉnh cho từng chi nhánh nằm trong `src/config.js`
+(`BRANCHES[].provinces`). **Việt Nam đã có đợt sáp nhập tỉnh 2025 — hãy rà
+lại danh sách này cho khớp tên tỉnh/thành hiện hành trước khi dùng chính
+thức.**
 
 **Nhóm KH** (theo `Quan tâm`, xét theo đúng thứ tự ưu tiên bên dưới, dừng ở
 điều kiện đầu tiên khớp):
@@ -48,15 +79,14 @@ và trùng khớp trong `src/larkScript.js`. **Vietnam đã có đợt sáp nh�
 7. Có "kid"/"bé"/"trẻ em" **và** "tại nhà" → `KIDS-OFF`
 
 Nếu mô tả có "1 kèm 1" nhưng không rõ online/offline (hoặc có "kid" nhưng
-không rõ hình thức), bot **không** tự đoán — trả về không khớp để nhân viên
-xem lại, tránh gán sai nhóm.
+không rõ hình thức), bot **không** tự đoán — ghi lý do vào cột "Ghi chú
+phân loại (bot)" và báo qua Lark để nhân viên xem lại, tránh gán sai nhóm.
 
-> ⚠️ Nhãn (label) của từng nhóm trong `src/config.js` / `src/larkScript.js`
-> (`TRUONG HOC`, `TTAN`, `OTO-ONLINE`, `OTO-OFFLINE`, `DOANH NGHIEP`,
-> `KIDS-ONL`, `KIDS-OFF`) **phải khớp chính xác từng ký tự** với các option
-> đã tạo sẵn trong trường Single Select "Nhóm KH" của bảng — kiểm tra lại
-> trước khi dùng, sửa trong `config.js`/`larkScript.js` nếu tên option thực
-> tế viết khác (có dấu, viết hoa/thường khác...).
+> ⚠️ Nhãn (label) của từng nhóm trong `src/config.js` (`TRUONG HOC`,
+> `TTAN`, `OTO-ONLINE`, `OTO-OFFLINE`, `DOANH NGHIEP`, `KIDS-ONL`,
+> `KIDS-OFF`) **phải khớp chính xác từng ký tự** với option đã tạo sẵn
+> trong trường Single Select "Nhóm KH" của bảng — chạy
+> `node scripts/inspect-base.mjs` (mục 3) để đối chiếu.
 
 **Mã KH** = `<mã nhóm KH>-<mã chi nhánh><STT 4 số>`
 
@@ -73,101 +103,63 @@ xem lại, tránh gán sai nhóm.
 Ví dụ: lead ở Đà Nẵng, quan tâm trung tâm, là mã đầu tiên của cặp này →
 `TT-430001`.
 
-## 2. Chuẩn bị trong Lark Base
+## 2. Tạo bảng phụ "STT Counters"
 
-### 2.1. Kiểm tra/khớp tên trường trong bảng Lead (`tblckO9AXEQ4pLvP`)
+Tạo 1 bảng mới trong cùng Base (tên đúng `STT Counters`, hoặc đổi tên qua
+biến môi trường `LARK_COUNTER_TABLE_NAME`), 2 cột:
+- `Key` (Text)
+- `STT` (Number, không thập phân)
 
-Mặc định script dùng các tên trường sau — sửa lại trong `src/config.js`
-(`FIELD_NAMES`) và trong phần cấu hình action nếu bảng của bạn đặt tên khác:
+Không cần tạo sẵn dòng nào — bot tự tạo dòng mới với `STT = 1` khi gặp một
+cặp Nhóm KH + Chi nhánh lần đầu tiên.
 
-- `Địa chỉ`
-- `Quan tâm`
-- `Nhóm KH` (Single Select, đã có option `CHỜ PHÂN LOẠI`)
-- `Chi nhánh`
-- `Người phụ trách` (People field)
-- `Người liên quan` (People field)
-- `Mã KH` (Text)
-
-### 2.2. Tạo bảng phụ "STT Counters"
-
-Tạo 1 bảng mới trong cùng Base, 2 cột:
-- `Key` (Text) — giá trị dạng `<mã nhóm>-<mã chi nhánh>`, ví dụ `TT-43`
-- `STT hiện tại` (Number, không thập phân)
-
-Tạo sẵn **7 nhóm × 3 chi nhánh = 21 dòng** (hoặc chỉ tạo dòng nào thực tế
-sẽ dùng), Key tương ứng, ví dụ: `TH-29`, `TH-43`, `TH-59`, `TT-29`, `TT-43`,
-`TT-59`, `DN-29`, ...
-
-Nếu bảng Lead **đã có sẵn Mã KH cũ** theo đúng định dạng này, tính STT khởi
-điểm bằng cách:
+Nếu bảng Lead **đã có sẵn Mã KH cũ** theo đúng định dạng `<mã nhóm>-<mã chi
+nhánh><4 số>`, seed STT khởi điểm để không bị trùng mã:
 1. Copy toàn bộ cột `Mã KH` hiện có, dán vào 1 file `.txt` (mỗi dòng 1 mã).
 2. Chạy `node scripts/seed-counters.js duong-dan-file.txt`.
-3. Nhập kết quả (`Key`, `STT hiện tại`) vào bảng `STT Counters`.
+3. Nhập thủ công kết quả (`Key`, `STT`) vào bảng `STT Counters`.
 
-Nếu chưa có Mã KH nào theo định dạng này, để `STT hiện tại = 0` cho tất cả.
+## 3. Kiểm tra field/quyền truy cập trước khi bật thật
 
-## 3. Cấu hình Automation
+```bash
+LARK_APP_ID=... LARK_APP_SECRET=... node scripts/inspect-base.mjs
+```
 
-Vào bảng Lead → **Automation** → tạo automation mới, đặt tên ví dụ
-"Phân luồng lead mới".
+In ra toàn bộ tên trường + option hiện có trong bảng Lead, để đối chiếu với
+`src/config.js` (`FIELD_NAMES`, `GROUPS[].label`, `BRANCHES[].label`). Nếu
+lệnh báo lỗi quyền truy cập, quay lại bước 2 ở mục 0 (thêm App vào Base).
 
-**Trigger:** Khi bản ghi được thêm mới trong bảng Lead.
-**Điều kiện (Condition):** `Nhóm KH` = `CHỜ PHÂN LOẠI`.
+## 4. Chạy thử an toàn rồi mới bật lịch tự động
 
-**Action 1 — Gửi thông báo (Send notification):**
-Chọn action gửi thông báo có sẵn của Lark Base, gửi vào nhóm chat phụ trách
-tiếp nhận lead, nội dung gợi ý: *"🆕 Lead mới: {{Tên KH}} — {{Địa chỉ}} —
-{{Quan tâm}}"* (thay bằng tên trường thực tế).
+```bash
+LARK_APP_ID=... LARK_APP_SECRET=... LARK_NOTIFY_CHAT_ID=... DRY_RUN=true node scripts/poll-and-route.mjs
+```
 
-**Action 2 — Chạy tập lệnh (Run script):**
-- Input params: `diaChi` ← trường Địa chỉ của bản ghi trigger, `quanTam` ←
-  trường Quan tâm của bản ghi trigger.
-- Dán toàn bộ nội dung `src/larkScript.js` vào ô code.
-- Output params: `matched` (boolean), `chiNhanhCode`, `chiNhanhLabel`,
-  `maChiNhanh`, `nhomKHCode`, `nhomKHLabel`, `maNhom`, `prefix`, `reason`
-  (tất cả kiểu Text trừ `matched` là Boolean).
+`DRY_RUN=true` chỉ in ra console các hành động dự kiến (không ghi dữ liệu,
+không gửi tin nhắn) — dùng để kiểm tra logic phân loại đúng với vài lead
+thật trước. Khi đã yên tâm, bỏ `DRY_RUN` để chạy thật, hoặc vào tab
+**Actions** của repo trên GitHub → chọn workflow **"Lead routing bot"** →
+**Run workflow** để chạy thử 1 lần thủ công (có ô `dry_run` để chọn).
 
-> Editor script của Lark Base có thể yêu cầu một khuôn mẫu hơi khác (ví dụ
-> bắt buộc viết trong hàm `main(params)` rồi `return`, thay vì dùng biến
-> `params` ở top-level). Nếu vậy, mở khối code mẫu Lark hiển thị sẵn khi tạo
-> action để xem đúng khuôn mẫu, rồi bọc phần logic của `larkScript.js` vào
-> đúng chỗ — không cần sửa logic bên trong.
+Sau khi đã khai báo đủ GitHub Secrets (mục 0, bước 6), workflow
+`.github/workflows/lead-routing.yml` tự chạy mỗi 5 phút — không cần làm gì
+thêm.
 
-**Action 3 — Rẽ nhánh (If/Else) theo `chiNhanhCode`:**
+## 5. Phụ lục — Cách B: Lark Base Automation (không cần server ngoài)
 
-- **Nhánh `chiNhanhCode = EIV_DN`:**
-  1. *Find record* trong bảng `STT Counters` với `Key = {{prefix}}`.
-  2. *Update record* (STT Counters): `STT hiện tại = STT hiện tại + 1`.
-  3. *Update record* (bản ghi Lead trigger):
-     - `Mã KH` = `{{prefix}}` nối với `STT hiện tại` sau bước 2, định dạng
-       4 chữ số (dùng công thức dạng `TEXT([STT hiện tại], "0000")` hoặc
-       tương đương tùy công thức Lark Base hỗ trợ).
-     - `Chi nhánh` = `EIV ĐN`
-     - `Nhóm KH` = `{{nhomKHLabel}}`
-     - `Người phụ trách` = chọn **Phạm Thị Hồng Vân - CM ĐN** (chọn trực
-       tiếp qua people-picker, không cần ID)
-     - `Người liên quan` = chọn **Lý Hoàng Thục Linh**
+Nếu không muốn dùng GitHub Actions/API, có thể cấu hình thủ công ngay
+trong Lark Base bằng file `src/larkScript.js` (bản đóng gói sẵn để dán vào
+action "Chạy tập lệnh"). Cách này cần ~15-20 phút bấm tay trong Lark mỗi
+lần thiết lập (không phải mỗi lead), và **không tự sinh được Mã KH nối
+tiếp qua API** — phải dùng thêm action "Find record"/"Update record" có
+sẵn của Lark để cập nhật bảng đếm, và chọn Người phụ trách/Người liên quan
+trực tiếp qua people-picker (không cần biết email/ID).
 
-- **Nhánh `chiNhanhCode = EIV_HCM`:** tương tự, `Chi nhánh = EIV HCM`,
-  `Người phụ trách` = **Nguyễn Tuấn Khôi** + **Phan Thị Thùy Linh**,
-  `Người liên quan` = **Nguyễn Tuấn Khôi**.
+Chi tiết từng bước (trigger, điều kiện, action, cách rẽ nhánh theo từng chi
+nhánh) — liên hệ để tôi cung cấp lại hướng dẫn đầy đủ nếu muốn dùng cách
+này thay vì Cách A.
 
-- **Nhánh `chiNhanhCode = EIV_HN`:** tương tự, `Chi nhánh = EIV HN`,
-  `Người phụ trách` = **Hoàng Hải Yến - Sale HN**, `Người liên quan` =
-  **Trịnh Thu Quỳnh** + **Trần Thùy Giang**.
-
-- **Nhánh else (không xác định được, `matched = false`):** Gửi thông báo
-  kèm `{{reason}}` tới nhóm chat quản lý để phân loại thủ công, không đổi
-  `Nhóm KH`.
-
-> Vì dùng people-picker chọn trực tiếp tên người thật trong UI của Lark
-> (thay vì set field bằng ID người dùng lấy từ script), các ID ví dụ trong
-> `src/config.js` (`42g8fg61`, `1b57762b`, `62dfgc39`...) **không bắt buộc
-> phải có** cho cách triển khai này — chỉ cần chọn đúng người trong danh
-> sách. Các ID đó (và các ô còn để `TODO_ID_...`) chỉ hữu ích nếu sau này
-> đổi sang phương án gọi Lark Open API từ một service ngoài.
-
-## 4. Kiểm thử logic phân loại
+## 6. Kiểm thử logic phân loại (áp dụng cho cả 2 cách)
 
 ```bash
 npm test
@@ -175,17 +167,19 @@ npm test
 
 Chạy 20 test case cho `matchBranch`, `matchGroup`, `nextStt`, `buildMaKH`,
 `classifyLead`, `routeLead`. Khi chỉnh sửa danh sách tỉnh/từ khóa trong
-`src/config.js`, sửa đồng thời trong `src/larkScript.js` rồi chạy lại test
-để đảm bảo không phá vỡ các quy tắc hiện có — thêm test case mới cho câu
-input thực tế hay gặp nếu cần.
+`src/config.js`, chạy lại test để đảm bảo không phá vỡ quy tắc hiện có —
+thêm test case mới cho câu input thực tế hay gặp nếu cần.
 
-## 5. Việc cần bạn xác nhận/hoàn thiện trước khi chạy thật
+## 7. Việc cần bạn xác nhận/hoàn thiện trước khi chạy thật
 
-- [ ] Xác nhận đúng tên các trường trong bảng Lead (mục 2.1).
-- [ ] Xác nhận nhãn 7 option của trường Single Select "Nhóm KH" khớp với
-      `src/config.js`/`src/larkScript.js`.
-- [ ] Tạo bảng `STT Counters` + seed STT ban đầu (mục 2.2).
+- [ ] Thêm App vào Base + vào nhóm chat thông báo (mục 0).
+- [ ] Điền đủ email thật cho 7 người trong `src/config.js` (đang để
+      `TODO_EMAIL_...`).
+- [ ] Khai báo đủ 3 GitHub Secrets (mục 0, bước 6).
+- [ ] Tạo bảng `STT Counters` (mục 2), seed STT nếu đã có Mã KH cũ.
+- [ ] Chạy `inspect-base.mjs` đối chiếu tên field/option (mục 3).
+- [ ] Chạy thử `DRY_RUN=true` với vài lead mẫu đủ 3 miền, đủ 7 nhóm trước
+      khi để chạy thật (mục 4).
 - [ ] Rà lại danh sách tỉnh/thành theo địa giới hành chính hiện hành (sau
       sáp nhập 2025) trong `provinces` của từng chi nhánh.
-- [ ] Test thử với vài lead mẫu (đủ 3 miền, đủ 7 nhóm) trước khi bật cho
-      toàn bộ lead thật.
+- [ ] Cân nhắc rotate App Secret sau khi setup xong (đã dán trong chat).

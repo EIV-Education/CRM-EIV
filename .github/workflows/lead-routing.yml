@@ -1,0 +1,27 @@
+name: Lead routing bot
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Chay thu, khong ghi du lieu that (true/false)'
+        required: false
+        default: 'false'
+
+jobs:
+  route-leads:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Chay bot phan luong lead
+        env:
+          LARK_APP_ID: ${{ secrets.LARK_APP_ID }}
+          LARK_APP_SECRET: ${{ secrets.LARK_APP_SECRET }}
+          LARK_NOTIFY_CHAT_ID: ${{ secrets.LARK_NOTIFY_CHAT_ID }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        run: node scripts/poll-and-route.mjs
