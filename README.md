@@ -149,6 +149,57 @@ Sau khi đã khai báo đủ GitHub Secrets (mục 0, bước 6), workflow
 `.github/workflows/lead-routing.yml` tự chạy mỗi 5 phút — không cần làm gì
 thêm.
 
+## 4b. Xử lý gần tức thì bằng Webhook (Vercel) — tuỳ chọn thêm
+
+Lịch 5 phút ở mục 4 vẫn chạy nền như một lớp dự phòng, đảm bảo không lead
+nào bị bỏ sót. Nếu muốn lead được phân luồng **gần như ngay khi tạo**
+(không phải chờ tới 5 phút), thêm 1 webhook: `api/webhook.js` trong repo
+này là 1 Vercel serverless function sẵn sàng dùng, không cần sửa code.
+
+**Bước 1 — Deploy `api/webhook.js` lên Vercel:**
+1. Vào [vercel.com](https://vercel.com) (đăng nhập bằng tài khoản GitHub
+   của tổ chức) → **Add New → Project** → chọn import repo `CRM-EIV`.
+2. Vercel tự nhận diện đây là project Node (không cần build command/output
+   directory gì đặc biệt, cứ để mặc định) → bấm **Deploy**.
+3. Sau khi deploy xong, vào **Project → Settings → Environment Variables**,
+   thêm:
+   - `LARK_APP_ID`
+   - `LARK_APP_SECRET`
+   - `WEBHOOK_SECRET` — tự đặt 1 chuỗi bí mật ngẫu nhiên bất kỳ (ví dụ
+     chạy `openssl rand -hex 20`), dùng để xác thực request gọi vào webhook
+     này, tránh người ngoài biết URL rồi gọi lung tung.
+   - (tuỳ chọn) `LARK_NOTIFY_CHAT_ID` nếu muốn đổi khác giá trị mặc định.
+4. Bấm **Redeploy** để áp dụng biến môi trường vừa thêm.
+5. Lấy URL production, ví dụ `https://crm-eiv.vercel.app`, endpoint đầy đủ
+   sẽ là `https://crm-eiv.vercel.app/api/webhook?token=<WEBHOOK_SECRET>`.
+
+**Bước 2 — Cấu hình Automation trong Lark Base gọi webhook này:**
+1. Vào bảng Lead → **Automation** → tạo automation mới.
+2. **Trigger**: Khi bản ghi được thêm mới trong bảng Lead.
+3. **Điều kiện**: `Nhóm KH` = `CHỜ PHÂN LOẠI`.
+4. **Action**: chọn action gửi HTTP request / gọi webhook có sẵn của Lark
+   Base Automation (tên có thể là "Gửi yêu cầu HTTP", "Webhook", hoặc
+   tương tự tuỳ giao diện) — cấu hình:
+   - Method: `POST`
+   - URL: `https://<project-cua-ban>.vercel.app/api/webhook?token=<WEBHOOK_SECRET>`
+   - Headers: `Content-Type: application/json`
+   - Body (JSON): `{"record_id": "{{record_id}}"}` — dùng công cụ chèn biến
+     của Lark để chọn đúng "ID bản ghi" của bản ghi vừa trigger (tên biến
+     hiển thị có thể khác chút tuỳ bản Lark, miễn key gửi lên là
+     `record_id`).
+5. Lưu và bật automation.
+
+Từ giờ mỗi lead mới sẽ được webhook xử lý gần như ngay lập tức; lịch 5
+phút ở mục 4 vẫn chạy song song để bắt lại bất kỳ lead nào lỡ bị bỏ sót
+(webhook lỗi, Vercel tạm gián đoạn...) — an toàn vì logic idempotent
+(record đã xử lý sẽ không còn khớp điều kiện `CHỜ PHÂN LOẠI` nữa nên không
+bị xử lý 2 lần).
+
+> Nếu Lark Base Automation của bạn **không có sẵn action gửi HTTP
+> request/webhook** (một số gói/phiên bản Lark có thể giới hạn action
+> này), cho tôi biết — sẽ cần chuyển hướng khác (ví dụ dùng Lark Event
+> Subscription cấp app thay vì action trong Automation).
+
 ## 5. Phụ lục — Cách B: Lark Base Automation (không cần server ngoài)
 
 Nếu không muốn dùng GitHub Actions/API, có thể cấu hình thủ công ngay
@@ -188,3 +239,5 @@ thêm test case mới cho câu input thực tế hay gặp nếu cần.
 - [ ] Rà lại danh sách tỉnh/thành theo địa giới hành chính hiện hành (sau
       sáp nhập 2025) trong `PROVINCE_BRANCH_MAP`/`provinces`.
 - [ ] Cân nhắc rotate App Secret sau khi setup xong (đã dán trong chat).
+- [ ] (Tuỳ chọn) Deploy `api/webhook.js` lên Vercel + cấu hình Automation
+      gọi webhook để xử lý gần tức thì thay vì chờ lịch 5 phút (mục 4b).

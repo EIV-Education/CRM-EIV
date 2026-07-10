@@ -62,6 +62,13 @@ export async function searchRecords(appToken, tableId, body = {}) {
   return records;
 }
 
+export async function getRecord(appToken, tableId, recordId) {
+  const data = await larkFetch(`/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records/${recordId}`, {
+    method: 'GET',
+  });
+  return data.record;
+}
+
 export async function updateRecord(appToken, tableId, recordId, fields) {
   return larkFetch(`/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}/records/${recordId}`, {
     method: 'PUT',
