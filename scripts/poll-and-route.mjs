@@ -27,9 +27,11 @@ function log(...args) {
 }
 
 async function fetchAllRecords() {
-  return searchRecords(LARK_BASE_APP_TOKEN, LARK_LEAD_TABLE_ID, {
-    field_names: [FIELD_NAMES.maKH, FIELD_NAMES.nhomKH, FIELD_NAMES.diaChi, FIELD_NAMES.quanTam, FIELD_NAMES.ghiChuBot],
-  });
+  // Khong dung field_names de gioi han - neu 1 ten field cau hinh sai/chua
+  // ton tai (vi du "Ghi chu phan loai (bot)" chua duoc tao), Lark tra loi
+  // FieldNameNotFound va chan toan bo request. Lay full record se khong bi
+  // loi nay; field khong ton tai chi don gian la undefined khi doc.
+  return searchRecords(LARK_BASE_APP_TOKEN, LARK_LEAD_TABLE_ID, {});
 }
 
 async function resolveAllEmails() {

@@ -6,9 +6,18 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 'Chay thu, khong ghi du lieu that (true/false)'
+        description: 'Chay thu, khong ghi du lieu that (true/false) - chi ap dung cho script route'
         required: false
         default: 'false'
+      script:
+        description: 'Script muon chay'
+        required: false
+        default: 'route'
+        type: choice
+        options:
+          - route
+          - inspect-base
+          - list-chats
 
 jobs:
   route-leads:
@@ -18,10 +27,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Chay bot phan luong lead
+      - name: Chay script
         env:
           LARK_APP_ID: ${{ secrets.LARK_APP_ID }}
           LARK_APP_SECRET: ${{ secrets.LARK_APP_SECRET }}
           LARK_NOTIFY_CHAT_ID: ${{ secrets.LARK_NOTIFY_CHAT_ID }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
-        run: node scripts/poll-and-route.mjs
+        run: |
+          case "${{ github.event.inputs.script || 'route' }}" in
+            inspect-base) node scripts/inspect-base.mjs ;;
+            list-chats) node scripts/list-chats.mjs ;;
+            *) node scripts/poll-and-route.mjs ;;
+          esac
