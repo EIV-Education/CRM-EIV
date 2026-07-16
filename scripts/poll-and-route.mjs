@@ -7,7 +7,7 @@
 // Chay thu an toan (khong ghi gi vao Base, chi in ra console):
 //   DRY_RUN=true node scripts/poll-and-route.mjs
 
-import { buildCtx, isPending, processLead } from '../src/leadProcessor.js';
+import { buildCtx, isPending, processLead, notifyProcessingError } from '../src/leadProcessor.js';
 
 const DRY_RUN = process.env.DRY_RUN === 'true';
 
@@ -23,13 +23,23 @@ async function main() {
 
   log(`Tim thay ${pendingLeads.length} lead dang cho phan loai (tren tong ${ctx.allRecords.length} lead).`);
 
+  const failures = [];
   for (const record of pendingLeads) {
     try {
       await processLead(record, ctx);
     } catch (err) {
       // Khong de 1 lead loi (vi du thieu field) chan ca cac lead con lai.
       console.error(`Loi khi xu ly lead ${record.record_id}:`, err.message);
+      failures.push(`- ${record.record_id}: ${err.message}`);
     }
+  }
+
+  // Gom tat ca loi ky thuat cua lan quet nay thanh 1 thong bao duy nhat,
+  // tranh spam Lark neu nhieu lead cung gap 1 loi (vi du thieu field).
+  if (failures.length > 0 && !DRY_RUN) {
+    const preview = failures.slice(0, 5).join('\n');
+    const more = failures.length > 5 ? `\n...va ${failures.length - 5} lead khac.` : '';
+    await notifyProcessingError(`${failures.length} lead loi khi quet dinh ky:\n${preview}${more}`);
   }
 
   log('Hoan tat.');

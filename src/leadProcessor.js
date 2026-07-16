@@ -149,3 +149,17 @@ export async function processLead(record, ctx) {
     await handleMatched(record, result, diaChi, quanTam, ctx);
   }
 }
+
+// Bao loi KY THUAT (exception ngoai du kien - vi du sai ten field, mat
+// quyen truy cap...) qua Lark, phan biet voi truong hop "khong phan loai
+// duoc" o handleUnmatched (do la nghiep vu binh thuong, da tu bao rieng).
+// Khong throw tiep neu ban than viec gui thong bao cung loi - chi log.
+export async function notifyProcessingError(message) {
+  console.error(message);
+  if (!NOTIFY_CHAT_ID) return;
+  try {
+    await sendTextMessage(NOTIFY_CHAT_ID, `🛑 Bot phân luồng lead gặp lỗi kỹ thuật:\n${message}`);
+  } catch (err) {
+    console.error('Khong gui duoc thong bao loi qua Lark:', err.message);
+  }
+}

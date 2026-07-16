@@ -16,7 +16,7 @@
 
 import { getRecord } from '../src/larkApi.js';
 import { LARK_BASE_APP_TOKEN, LARK_LEAD_TABLE_ID } from '../src/config.js';
-import { buildCtx, isPending, processLead } from '../src/leadProcessor.js';
+import { buildCtx, isPending, processLead, notifyProcessingError } from '../src/leadProcessor.js';
 
 function log(...args) {
   console.log(new Date().toISOString(), ...args);
@@ -62,7 +62,7 @@ export default async function handler(req, res) {
 
     res.status(200).json({ ok: true });
   } catch (err) {
-    console.error(err);
+    await notifyProcessingError(`Lead ${recordId}: ${err.message}`);
     res.status(500).json({ error: err.message });
   }
 }

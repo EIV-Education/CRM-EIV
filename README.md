@@ -80,6 +80,15 @@ dừng ở điều kiện đầu tiên khớp):
 Nếu mô tả có "1 kèm 1" nhưng không rõ online/offline (hoặc có "kid" nhưng
 không rõ hình thức), bot **không** tự đoán — ghi lý do vào cột "Ghi chú
 phân loại (bot)" và báo qua Lark để nhân viên xem lại, tránh gán sai nhóm.
+Đây là thông báo **nghiệp vụ bình thường** (⚠️), khác với thông báo lỗi kỹ
+thuật bên dưới.
+
+**Thông báo lỗi kỹ thuật**: nếu bot gặp lỗi ngoài dự kiến khi xử lý (ví dụ
+sai tên field, mất quyền truy cập API...), nó cũng gửi 1 tin nhắn (🛑) vào
+đúng nhóm chat thông báo, kèm nội dung lỗi cụ thể — không âm thầm bỏ qua.
+Với lịch quét 5 phút, nếu nhiều lead cùng gặp 1 lỗi trong 1 lần quét, bot
+gộp lại thành **1 tin nhắn tổng hợp** (liệt kê tối đa 5 lead đầu, còn lại
+ghi số lượng) thay vì gửi lặp lại nhiều lần, tránh spam nhóm chat.
 
 > ⚠️ Field **"Nhóm KH" trong bảng Lead là Link (liên kết tới bảng riêng
 > `Nhóm KH`)**, không phải Single Select — bot tự tra `record_id` tương
