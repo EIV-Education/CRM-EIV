@@ -18,6 +18,7 @@ on:
           - route
           - inspect-base
           - list-chats
+          - check-emails
 
 jobs:
   route-leads:
@@ -37,5 +38,6 @@ jobs:
           case "${{ github.event.inputs.script || 'route' }}" in
             inspect-base) node scripts/inspect-base.mjs ;;
             list-chats) node scripts/list-chats.mjs ;;
+            check-emails) node scripts/check-emails.mjs ;;
             *) node scripts/poll-and-route.mjs ;;
           esac
