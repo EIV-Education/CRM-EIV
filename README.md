@@ -86,6 +86,11 @@ Lead vẫn giữ nguyên `CHỜ PHÂN LOẠI` nên **sẽ được nhắc lại 
 phút tiếp theo** nếu chưa ai xử lý — đây là thông báo **nghiệp vụ bình
 thường**, khác với thông báo lỗi kỹ thuật bên dưới.
 
+**Ngoại lệ**: nếu 1 bản ghi hoàn toàn trống (không Tỉnh/Thành phố, không
+Địa chỉ, không Mô tả — ví dụ dòng mẫu/placeholder trong bảng), bot **bỏ
+qua hẳn**, không gửi thông báo và không nhắc lại — vì không có gì để phân
+loại và bản ghi này sẽ không bao giờ tự hết trạng thái `CHỜ PHÂN LOẠI`.
+
 **Thông báo lỗi kỹ thuật**: nếu bot gặp lỗi ngoài dự kiến khi xử lý (ví dụ
 sai tên field, mất quyền truy cập API...), nó cũng gửi 1 tin nhắn (🛑) vào
 đúng nhóm chat thông báo, kèm nội dung lỗi cụ thể — không âm thầm bỏ qua.

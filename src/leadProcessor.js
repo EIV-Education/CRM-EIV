@@ -156,6 +156,15 @@ export async function processLead(record, ctx) {
   const diaChi = extractText(record.fields[FIELD_NAMES.diaChi]);
   const tinhThanh = extractText(record.fields[FIELD_NAMES.tinhThanh]);
   const quanTam = extractText(record.fields[FIELD_NAMES.quanTam]);
+
+  // Ban ghi hoan toan trong (vi du dong mau/placeholder nhu "khong xoa
+  // dong nay") khong co gi de phan loai va se mai mai o CHO PHAN LOAI -
+  // bo qua han, khong bao loi lap lai moi lan quet.
+  if (!diaChi && !tinhThanh && !quanTam) {
+    ctx.log(`Bo qua lead ${record.record_id}: khong co du lieu (Dia chi/Tinh Thanh pho/Mo ta deu trong).`);
+    return;
+  }
+
   const result = classifyLead({ diaChi, quanTam, tinhThanh });
 
   if (!result.matched) {
