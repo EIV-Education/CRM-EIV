@@ -21,10 +21,6 @@ export const FIELD_NAMES = {
   nguoiPhuTrach: process.env.FIELD_NGUOI_PHU_TRACH || 'Người phụ trách',
   nguoiLienQuan: process.env.FIELD_NGUOI_LIEN_QUAN || 'Người Liên Quan',
   maKH: process.env.FIELD_MA_KH || 'Mã KH',
-  // Field Text dung de bot ghi ly do khi khong phan loai duoc, kiem tra
-  // truoc khi gui lai thong bao tranh spam nhieu lan cho cung 1 lead.
-  // CAN TU TAO field Text nay trong Base (chua co san) truoc khi dung that.
-  ghiChuBot: process.env.FIELD_GHI_CHU_BOT || 'Ghi chú phân loại (bot)',
 };
 
 export const PENDING_GROUP_LABEL = process.env.PENDING_GROUP_LABEL || 'CHỜ PHÂN LOẠI';

@@ -64,19 +64,17 @@ function peopleField(people, emailToOpenId, log) {
 // ctx = { dryRun, log, emailToOpenId, nhomKHLabelToRecordId, existingMaKH }
 // `existingMaKH` la mang co the bi mutate (push them ma vua sinh) de tranh
 // trung ma khi xu ly nhieu lead cung mot lan chay.
+//
+// Khong ghi gi vao Base cho truong hop nay (theo yeu cau: khong tao them
+// field moi) - chi gui thong bao Lark. He qua: neu lead van con o CHO PHAN
+// LOAI, moi lan quet dinh ky (5 phut) se gui lai thong bao nhac, cho toi
+// khi ai do bo sung du lieu (Tinh/Thanh pho, Mo ta) hoac tu tay phan loai.
+// Day la danh doi co chu dich, khong phai loi.
 async function handleUnmatched(record, result, diaChi, quanTam, ctx) {
   const { dryRun, log } = ctx;
-  const existingNote = extractText(record.fields[FIELD_NAMES.ghiChuBot]);
-  if (existingNote === result.reason) {
-    log(`Bo qua (da thong bao truoc do): ${record.record_id}`);
-    return;
-  }
   log(`Khong phan loai duoc lead ${record.record_id}: ${result.reason}`);
   if (dryRun) return;
 
-  await updateRecord(LARK_BASE_APP_TOKEN, LARK_LEAD_TABLE_ID, record.record_id, {
-    [FIELD_NAMES.ghiChuBot]: result.reason,
-  });
   if (NOTIFY_CHAT_ID) {
     await sendTextMessage(
       NOTIFY_CHAT_ID,

@@ -78,10 +78,11 @@ dừng ở điều kiện đầu tiên khớp):
 7. Có "kid"/"bé"/"trẻ em" **và** "tại nhà" → `KIDS-OFF`
 
 Nếu mô tả có "1 kèm 1" nhưng không rõ online/offline (hoặc có "kid" nhưng
-không rõ hình thức), bot **không** tự đoán — ghi lý do vào cột "Ghi chú
-phân loại (bot)" và báo qua Lark để nhân viên xem lại, tránh gán sai nhóm.
-Đây là thông báo **nghiệp vụ bình thường** (⚠️), khác với thông báo lỗi kỹ
-thuật bên dưới.
+không rõ hình thức), bot **không** tự đoán — chỉ gửi thông báo (⚠️) qua
+Lark để nhân viên xem lại, tránh gán sai nhóm, không ghi gì vào record.
+Lead vẫn giữ nguyên `CHỜ PHÂN LOẠI` nên **sẽ được nhắc lại ở lần quét 5
+phút tiếp theo** nếu chưa ai xử lý — đây là thông báo **nghiệp vụ bình
+thường**, khác với thông báo lỗi kỹ thuật bên dưới.
 
 **Thông báo lỗi kỹ thuật**: nếu bot gặp lỗi ngoài dự kiến khi xử lý (ví dụ
 sai tên field, mất quyền truy cập API...), nó cũng gửi 1 tin nhắn (🛑) vào
@@ -135,12 +136,14 @@ quyền truy cập, quay lại bước 2 ở mục 0 (thêm App vào Base). Đã
 đối chiếu 1 lần — tên field/nhãn hiện tại trong `config.js` đã khớp với
 Base thật tính đến thời điểm setup.
 
-Field **"Ghi chú phân loại (bot)"** (Text) hiện **chưa tồn tại** trong
-bảng Lead — bot dùng field này để tránh gửi lặp thông báo cho cùng 1 lead
-chưa phân loại được. Tự tạo field Text này trong Base (tên phải khớp
-chính xác `FIELD_NAMES.ghiChuBot` trong `src/config.js`) trước khi chạy
-thật; nếu bỏ qua, riêng phần lead không phân loại được sẽ báo lỗi ghi
-field (không ảnh hưởng tới các lead phân loại thành công).
+Bot **không tạo/ghi thêm field nào** vào bảng Lead ngoài các field nghiệp
+vụ đã có sẵn (Mã KH, CHI NHÁNH, Nhóm KH, Người phụ trách, Người Liên
+Quan). Với lead **không phân loại được**, bot chỉ gửi thông báo Lark, không
+ghi gì vào record — do đó nếu lead vẫn còn thiếu Tỉnh/Thành phố hoặc Mô tả
+phù hợp, **mỗi lần quét định kỳ (5 phút) sẽ gửi lại thông báo nhắc** cho
+tới khi có người bổ sung dữ liệu hoặc tự tay phân loại. Đây là đánh đổi có
+chủ đích (đơn giản, không cần thêm field) — nếu về sau muốn tránh nhắc lặp
+lại, có thể cân nhắc thêm 1 field đánh dấu riêng.
 
 ## 4. Chạy thử an toàn rồi mới bật lịch tự động
 
@@ -242,7 +245,10 @@ thêm test case mới cho câu input thực tế hay gặp nếu cần.
       bước 4).
 - [x] Đã chạy `inspect-base.mjs`, đối chiếu và sửa tên field/nhãn nhóm cho
       khớp Base thật (mục 1, mục 3).
-- [ ] Tạo field Text **"Ghi chú phân loại (bot)"** trong bảng Lead (mục 3).
+- [x] Quyền `contact:user.email:readonly` + phạm vi khả dụng (Availability)
+      của App đã mở đủ cho 7 người phụ trách/liên quan (`check-emails.mjs`
+      xác nhận 8/8 email tra được open_id).
+- [x] Test thực tế: lead đã phân loại đúng Mã KH/Chi nhánh/Nhóm KH.
 - [ ] Chạy thử `DRY_RUN=true` với vài lead mẫu đủ 3 miền, đủ 7 nhóm trước
       khi để chạy thật (mục 4).
 - [ ] Rà lại danh sách tỉnh/thành theo địa giới hành chính hiện hành (sau
