@@ -32,12 +32,20 @@ test('matchBranch: khong nhan dien duoc tra ve null', () => {
   assert.equal(b, null);
 });
 
-test('matchBranch: uu tien Tinh/Thanh pho (Single Select) khi co', () => {
+test('matchBranch: uu tien Dia chi, Tinh/Thanh pho chi la du phong', () => {
+  // Dia chi khong khop gi -> fallback dung Tinh/Thanh pho
   const b = matchBranch('Dia chi khong ro rang gi ca', 'ĐÀ NẴNG');
   assert.equal(b.code, 'EIV_DN');
 });
 
-test('matchBranch: Tinh/Thanh pho khop dung tung mien', () => {
+test('matchBranch: Dia chi khop thi thang, khong can toi Tinh/Thanh pho', () => {
+  // Dia chi noi Ha Noi nhung Tinh/Thanh pho (co the bi chon nham) lai la
+  // HCM - Dia chi phai thang vi la nguon uu tien.
+  const b = matchBranch('123 Kim Ma, Ha Noi', 'HỒ CHÍ MINH');
+  assert.equal(b.code, 'EIV_HN');
+});
+
+test('matchBranch: Tinh/Thanh pho (du phong) khop dung tung mien', () => {
   assert.equal(matchBranch('', 'HỒ CHÍ MINH').code, 'EIV_HCM');
   assert.equal(matchBranch('', 'HÀ NỘI').code, 'EIV_HN');
   assert.equal(matchBranch('', 'BÀ RỊA-VŨNG TÀU').code, 'EIV_HCM');
@@ -49,7 +57,7 @@ test('matchBranch: Tinh/Thanh pho la gia tri la (N/a, Dai Loan) -> null', () => 
   assert.equal(matchBranch('', 'Đài Loan'), null);
 });
 
-test('matchBranch: fallback ve Dia chi khi Tinh/Thanh pho rong', () => {
+test('matchBranch: Dia chi khop du Tinh/Thanh pho rong', () => {
   const b = matchBranch('123 Le Loi, Da Nang', '');
   assert.equal(b.code, 'EIV_DN');
 });

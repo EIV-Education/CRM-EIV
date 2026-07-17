@@ -12,21 +12,24 @@ function containsPhrase(text, phrase) {
   return re.test(text);
 }
 
-// Uu tien tra chi nhanh tu gia tri Single Select "Tinh/Thanh pho" (chinh
-// xac, controlled vocabulary) - chi khi khong co/khong khop moi fallback
-// sang parse text tu do o Dia chi.
+// Uu tien tra chi nhanh tu "Dia chi" (text tu do nhan vien/lead dien, theo
+// thuc te la nguon dang tin cay hon) - chi khi khong co/khong khop moi
+// fallback sang Single Select "Tinh/Thanh pho" (hay bi bo trong hoac chon
+// sai trong du lieu thuc te).
 export function matchBranch(diaChi, tinhThanh) {
+  const t = normalizeVN(diaChi);
+  if (t) {
+    for (const branch of BRANCHES) {
+      if (branch.provinces.some((p) => containsPhrase(t, p))) return branch;
+    }
+  }
+
   const tt = normalizeVN(tinhThanh);
   if (tt) {
     const code = PROVINCE_BRANCH_MAP[tt];
     if (code) return BRANCHES.find((b) => b.code === code) || null;
   }
 
-  const t = normalizeVN(diaChi);
-  if (!t) return null;
-  for (const branch of BRANCHES) {
-    if (branch.provinces.some((p) => containsPhrase(t, p))) return branch;
-  }
   return null;
 }
 

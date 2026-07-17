@@ -54,17 +54,18 @@ thêm.
 
 ## 1. Quy tắc phân luồng đã cài đặt
 
-**Chi nhánh**: nguồn chính là field Single Select **"Tỉnh/Thành phố"** (đã
-chuẩn hoá sẵn 51 giá trị trong Base — khớp trực tiếp, không cần đoán chữ),
-chỉ fallback sang parse text tự do ở "Địa chỉ" khi "Tỉnh/Thành phố" trống:
+**Chi nhánh**: nguồn chính là field **"Địa chỉ"** (text tự do, theo thực tế
+là dữ liệu đáng tin cậy hơn — trường "Tỉnh/Thành phố" hay bị bỏ trống hoặc
+chọn sai), chỉ dùng **"Tỉnh/Thành phố"** (Single Select, đã chuẩn hoá 51
+giá trị) làm **dự phòng** khi "Địa chỉ" không khớp được tỉnh/thành nào:
 - Đà Nẵng + miền Trung/Tây Nguyên → `EIV ĐN` (mã `43`)
 - TP.HCM + miền Nam → `EIV HCM` (mã `59`)
 - Hà Nội + miền Bắc → `EIV HN` (mã `29`)
 
-Bảng ánh xạ đầy đủ (từng tỉnh/thành → chi nhánh) nằm trong `src/config.js`
-(`PROVINCE_BRANCH_MAP`); danh sách dự phòng cho "Địa chỉ" nằm trong
-`BRANCHES[].provinces`. Hai giá trị `N/a` và `Đài Loan` cố tình để không
-khớp (cần xem thủ công).
+Danh sách từ khoá tỉnh/thành nhận diện trong "Địa chỉ" nằm trong
+`src/config.js` (`BRANCHES[].provinces`); bảng ánh xạ dự phòng cho
+"Tỉnh/Thành phố" nằm trong `PROVINCE_BRANCH_MAP`. Hai giá trị `N/a` và
+`Đài Loan` cố tình để không khớp (cần xem thủ công).
 
 **Nhóm KH** (theo field "Mô tả", xét theo đúng thứ tự ưu tiên bên dưới,
 dừng ở điều kiện đầu tiên khớp):
