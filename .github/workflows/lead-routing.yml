@@ -19,6 +19,11 @@ on:
           - inspect-base
           - list-chats
           - check-emails
+          - find-lead
+      arg:
+        description: 'Tu khoa tim kiem - chi dung cho script find-lead (vi du so dien thoai hoac ten)'
+        required: false
+        default: ''
 
 jobs:
   route-leads:
@@ -39,5 +44,6 @@ jobs:
             inspect-base) node scripts/inspect-base.mjs ;;
             list-chats) node scripts/list-chats.mjs ;;
             check-emails) node scripts/check-emails.mjs ;;
+            find-lead) node scripts/find-lead.mjs "${{ github.event.inputs.arg }}" ;;
             *) node scripts/poll-and-route.mjs ;;
           esac
