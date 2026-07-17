@@ -13,7 +13,14 @@ import {
   FIELD_NAMES,
   PENDING_GROUP_LABEL,
 } from './config.js';
-import { searchRecords, updateRecord, sendTextMessage, resolveOpenIdsByEmail, extractText } from './larkApi.js';
+import {
+  searchRecords,
+  updateRecord,
+  sendTextMessage,
+  resolveOpenIdsByEmail,
+  extractText,
+  extractLinkRecordIds,
+} from './larkApi.js';
 
 export async function fetchAllLeadRecords() {
   // Khong dung field_names de gioi han - neu 1 ten field cau hinh sai/chua
@@ -26,8 +33,15 @@ export function extractExistingMaKH(allRecords) {
   return allRecords.map((r) => extractText(r.fields[FIELD_NAMES.maKH])).filter(Boolean);
 }
 
-export function isPending(record) {
-  return extractText(record.fields[FIELD_NAMES.nhomKH]) === PENDING_GROUP_LABEL;
+// Nhom KH la field Link - gia tri doc ve co the la { link_record_ids: [...] }
+// (khong co .text san, dac biet voi record moi tao chua duoc Lark cache
+// display text) nen KHONG the so sanh bang extractText() nhu cac field
+// text thuong. Phai so theo record_id thuc su cua "CHO PHAN LOAI" trong
+// bang lien ket (nhomKHLabelToRecordId, lay tu buildCtx/fetchNhomKHLabelToRecordId).
+export function isPending(record, nhomKHLabelToRecordId) {
+  const pendingId = nhomKHLabelToRecordId?.[PENDING_GROUP_LABEL];
+  if (!pendingId) return false;
+  return extractLinkRecordIds(record.fields[FIELD_NAMES.nhomKH]).includes(pendingId);
 }
 
 export async function fetchNhomKHLabelToRecordId() {

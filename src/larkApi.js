@@ -104,5 +104,25 @@ export function extractText(value) {
     return value.map((seg) => (typeof seg === 'string' ? seg : seg?.text || '')).join('');
   }
   if (typeof value === 'object' && 'text' in value) return value.text;
-  return String(value);
+  return '';
+}
+
+// Field kieu Link (vi du "Nhom KH") tra ve dang { link_record_ids: [...] }
+// (khong phai mang, khong co .text) khi record chua duoc cache display
+// text - extractText() se khong doc dung cho truong hop nay. Ham nay lay
+// thang danh sach record_id ma field dang tro toi, dung de so sanh theo
+// ID thay vi so text (dang tin cay hon).
+export function extractLinkRecordIds(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => {
+      if (typeof item === 'string') return [item];
+      if (Array.isArray(item?.link_record_ids)) return item.link_record_ids;
+      if (Array.isArray(item?.record_ids)) return item.record_ids;
+      return [];
+    });
+  }
+  if (Array.isArray(value.link_record_ids)) return value.link_record_ids;
+  if (Array.isArray(value.record_ids)) return value.record_ids;
+  return [];
 }

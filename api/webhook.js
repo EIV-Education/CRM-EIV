@@ -51,13 +51,14 @@ export default async function handler(req, res) {
       res.status(404).json({ error: 'Khong tim thay record' });
       return;
     }
-    if (!isPending(record)) {
+
+    const ctx = await buildCtx({ dryRun: false, log });
+    if (!isPending(record, ctx.nhomKHLabelToRecordId)) {
       log(`Lead ${recordId} da duoc xu ly truoc do, bo qua.`);
       res.status(200).json({ ok: true, skipped: true });
       return;
     }
 
-    const ctx = await buildCtx({ dryRun: false, log });
     await processLead(record, ctx);
 
     res.status(200).json({ ok: true });
