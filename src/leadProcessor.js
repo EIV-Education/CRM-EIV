@@ -70,9 +70,12 @@ function peopleField(people, emailToOpenId, log) {
 // LOAI, moi lan quet dinh ky (5 phut) se gui lai thong bao nhac, cho toi
 // khi ai do bo sung du lieu (Tinh/Thanh pho, Mo ta) hoac tu tay phan loai.
 // Day la danh doi co chu dich, khong phai loi.
-async function handleUnmatched(record, result, diaChi, quanTam, ctx) {
+async function handleUnmatched(record, result, diaChi, quanTam, tinhThanh, ctx) {
   const { dryRun, log } = ctx;
-  log(`Khong phan loai duoc lead ${record.record_id}: ${result.reason}`);
+  log(
+    `Khong phan loai duoc lead ${record.record_id}: ${result.reason}`,
+    `| Tinh/Thanh pho="${tinhThanh}" | Dia chi="${diaChi}" | Mo ta="${quanTam}"`,
+  );
   if (dryRun) return;
 
   if (NOTIFY_CHAT_ID) {
@@ -142,7 +145,7 @@ export async function processLead(record, ctx) {
   const result = classifyLead({ diaChi, quanTam, tinhThanh });
 
   if (!result.matched) {
-    await handleUnmatched(record, result, diaChi, quanTam, ctx);
+    await handleUnmatched(record, result, diaChi, quanTam, tinhThanh, ctx);
   } else {
     await handleMatched(record, result, diaChi, quanTam, ctx);
   }
