@@ -58,7 +58,7 @@ export function matchGroup(quanTam) {
   if (isSchool) return byCode('TRUONG_HOC');
   if (isCenter) return byCode('TTAN');
   if (isOneToOne && isOnline) return byCode('OTO_ONLINE');
-  if (isOneToOne && isOffline) return byCode('OTO_OFFLINE');
+  if (isOneToOne) return byCode('OTO_OFFLINE'); // mac dinh offline khi "1 kem 1" khong noi ro hinh thuc
   if (isEnterprise) return byCode('DOANH_NGHIEP');
   if (isKid && isOnline) return byCode('KIDS_ONL');
   if (isKid && isTaiNha) return byCode('KIDS_OFF');

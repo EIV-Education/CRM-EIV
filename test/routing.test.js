@@ -82,9 +82,9 @@ test('matchGroup: one-to-one truc tiep -> OTO_OFFLINE', () => {
   assert.equal(g.code, 'OTO_OFFLINE');
 });
 
-test('matchGroup: 1 kem 1 nhung khong ro hinh thuc -> null (can xem lai thu cong)', () => {
+test('matchGroup: 1 kem 1 khong ro hinh thuc -> mac dinh OTO_OFFLINE', () => {
   const g = matchGroup('Quan tam khoa hoc 1 kem 1');
-  assert.equal(g, null);
+  assert.equal(g.code, 'OTO_OFFLINE');
 });
 
 test('matchGroup: doanh nghiep', () => {

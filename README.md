@@ -73,14 +73,15 @@ dừng ở điều kiện đầu tiên khớp):
 2. Có "trung tâm" → `TTAN`
 3. Có tín hiệu 1 kèm 1 (one-to-one, 1-1, 1 kèm 1...) **và** "online"/"trực
    tuyến" → `OTO-ONLINE`
-4. Có tín hiệu 1 kèm 1 **và** "offline"/"trực tiếp" → `OTO-OFFLINE`
+4. Có tín hiệu 1 kèm 1 **và** "offline"/"trực tiếp", **hoặc có "1 kèm 1"
+   mà không nói rõ hình thức** (mặc định coi là offline) → `OTO-OFFLINE`
 5. Có "doanh nghiệp" → `DOANH NGHIỆP`
 6. Có "kid"/"bé"/"trẻ em" **và** "online"/"trực tuyến" → `KIDS-ONL`
 7. Có "kid"/"bé"/"trẻ em" **và** "tại nhà" → `KIDS-OFF`
 
-Nếu mô tả có "1 kèm 1" nhưng không rõ online/offline (hoặc có "kid" nhưng
-không rõ hình thức), bot **không** tự đoán — chỉ gửi thông báo (⚠️) qua
-Lark để nhân viên xem lại, tránh gán sai nhóm, không ghi gì vào record.
+Nếu mô tả có "kid"/"bé" nhưng không rõ hình thức (không phải trường hợp "1
+kèm 1", đã có mặc định riêng ở trên), bot **không** tự đoán — chỉ gửi
+thông báo (⚠️) qua Lark để nhân viên xem lại, không ghi gì vào record.
 Lead vẫn giữ nguyên `CHỜ PHÂN LOẠI` nên **sẽ được nhắc lại ở lần quét 5
 phút tiếp theo** nếu chưa ai xử lý — đây là thông báo **nghiệp vụ bình
 thường**, khác với thông báo lỗi kỹ thuật bên dưới.
