@@ -127,7 +127,7 @@ export const BRANCHES = [
     // email dung de tra ra open_id that qua Lark Contact API luc chay
     // (xem src/larkApi.js resolveOpenIdsByEmail). DIEN DUNG EMAIL LARK
     // cua tung nguoi truoc khi chay that.
-    phuTrach: [{ email: 'customerservicedn@eiv.edu.vn', name: 'Phạm Thị Hồng Vân-CM ĐN' }],
+    phuTrach: [{ email: 'linhlht@eiv.edu.vn', name: 'Lý Hoàng Thục Linh' }],
     lienQuan: [{ email: 'linhlht@eiv.edu.vn', name: 'Lý Hoàng Thục Linh' }],
   },
   {
