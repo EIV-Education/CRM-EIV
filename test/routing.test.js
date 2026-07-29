@@ -118,6 +118,16 @@ test('matchGroup: "nhoc" hoc o nha (khong noi online) -> KIDS_OFF', () => {
   assert.equal(g.code, 'KIDS_OFF');
 });
 
+test('matchGroup: "cho con hoc lop 6" + online -> KIDS_ONL (nhan dien qua lop hoc)', () => {
+  const g = matchGroup('Hoc kem tieng Anh Online. Can tu van cho con hoc lop 6, hoc online giao tiep');
+  assert.equal(g.code, 'KIDS_ONL');
+});
+
+test('matchGroup: "lop 10" du khong noi "con" -> van nhan dien la tre em', () => {
+  const g = matchGroup('Con nha em dang hoc lop 10, muon hoc them tieng Anh online');
+  assert.equal(g.code, 'KIDS_ONL');
+});
+
 test('nextStt: chua co ma nao -> bat dau tu 1', () => {
   assert.equal(nextStt([], 'TT-43'), 1);
 });

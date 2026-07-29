@@ -37,6 +37,9 @@ const ONE_TO_ONE_RE = /(1\s*(kem|k|x)?\s*1|mot\s*kem\s*mot|one[\s-]?to[\s-]?one)
 const ONLINE_RE = /\bonline\b|truc tuyen/;
 const OFFLINE_RE = /\boffline\b|truc tiep/;
 const KID_RE = /\b(kid|kids|be|tre em|thieu nhi|nhoc)\b/;
+// "lop 6", "lop 10"... la dau hieu ro rang ve hoc sinh (tuoi di hoc), an
+// toan hon nhieu so voi dung tu "con" don le (de trung "con"/"còn").
+const GRADE_RE = /\blop\s*\d{1,2}\b/;
 
 function byCode(code) {
   return GROUPS.find((g) => g.code === code) || null;
@@ -52,7 +55,7 @@ export function matchGroup(quanTam) {
   const isOneToOne = ONE_TO_ONE_RE.test(t);
   const isOnline = ONLINE_RE.test(t);
   const isOffline = OFFLINE_RE.test(t);
-  const isKid = KID_RE.test(t);
+  const isKid = KID_RE.test(t) || GRADE_RE.test(t) || containsPhrase(t, 'cho con');
   const isTaiNha = containsPhrase(t, 'tai nha') || containsPhrase(t, 'o nha');
 
   if (isSchool) return byCode('TRUONG_HOC');
