@@ -36,7 +36,7 @@ export function matchBranch(diaChi, tinhThanh) {
 const ONE_TO_ONE_RE = /(1\s*(kem|k|x)?\s*1|mot\s*kem\s*mot|one[\s-]?to[\s-]?one)/;
 const ONLINE_RE = /\bonline\b|truc tuyen/;
 const OFFLINE_RE = /\boffline\b|truc tiep/;
-const KID_RE = /\b(kid|kids|be|tre em|thieu nhi)\b/;
+const KID_RE = /\b(kid|kids|be|tre em|thieu nhi|nhoc)\b/;
 
 function byCode(code) {
   return GROUPS.find((g) => g.code === code) || null;
@@ -53,7 +53,7 @@ export function matchGroup(quanTam) {
   const isOnline = ONLINE_RE.test(t);
   const isOffline = OFFLINE_RE.test(t);
   const isKid = KID_RE.test(t);
-  const isTaiNha = containsPhrase(t, 'tai nha');
+  const isTaiNha = containsPhrase(t, 'tai nha') || containsPhrase(t, 'o nha');
 
   if (isSchool) return byCode('TRUONG_HOC');
   if (isCenter) return byCode('TTAN');

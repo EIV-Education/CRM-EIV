@@ -76,8 +76,8 @@ dừng ở điều kiện đầu tiên khớp):
 4. Có tín hiệu 1 kèm 1 **và** "offline"/"trực tiếp", **hoặc có "1 kèm 1"
    mà không nói rõ hình thức** (mặc định coi là offline) → `OTO-OFFLINE`
 5. Có "doanh nghiệp" → `DOANH NGHIỆP`
-6. Có "kid"/"bé"/"trẻ em" **và** "online"/"trực tuyến" → `KIDS-ONL`
-7. Có "kid"/"bé"/"trẻ em" **và** "tại nhà" → `KIDS-OFF`
+6. Có "kid"/"bé"/"trẻ em"/"nhóc" **và** "online"/"trực tuyến" → `KIDS-ONL`
+7. Có "kid"/"bé"/"trẻ em"/"nhóc" **và** "tại nhà"/"ở nhà" → `KIDS-OFF`
 
 Nếu mô tả có "kid"/"bé" nhưng không rõ hình thức (không phải trường hợp "1
 kèm 1", đã có mặc định riêng ở trên), bot **không** tự đoán — chỉ gửi
