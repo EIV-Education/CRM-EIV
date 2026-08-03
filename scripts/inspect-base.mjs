@@ -49,6 +49,11 @@ async function main() {
       console.log(`    property: ${JSON.stringify(field.property)}`);
       linkFields.push(field);
     }
+    if (field.type === 11) {
+      // Field Person - can biet co cho phep chon nhieu nguoi khong
+      // (multiple:false thi chi ghi duoc 1 nguoi, ghi 2+ se bi loi/bo qua).
+      console.log(`    property: ${JSON.stringify(field.property)}`);
+    }
   }
 
   for (const field of linkFields) {
