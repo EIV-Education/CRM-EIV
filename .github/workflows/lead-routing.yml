@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 'Chay thu, khong ghi du lieu that (true/false) - chi ap dung cho script route'
+        description: 'Chay thu, khong ghi du lieu that (true/false) - ap dung cho script route va backfill-people'
         required: false
         default: 'false'
       script:
@@ -20,6 +20,7 @@ on:
           - list-chats
           - check-emails
           - find-lead
+          - backfill-people
       arg:
         description: 'Tu khoa tim kiem - chi dung cho script find-lead (vi du so dien thoai hoac ten)'
         required: false
@@ -45,5 +46,6 @@ jobs:
             list-chats) node scripts/list-chats.mjs ;;
             check-emails) node scripts/check-emails.mjs ;;
             find-lead) node scripts/find-lead.mjs "${{ github.event.inputs.arg }}" ;;
+            backfill-people) node scripts/backfill-people.mjs ;;
             *) node scripts/poll-and-route.mjs ;;
           esac
