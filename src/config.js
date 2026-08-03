@@ -160,8 +160,7 @@ export const BRANCHES = [
       'ca mau',
     ],
     phuTrach: [
-      { email: 'lead.hcm@eiv.edu.vn', name: 'Nguyễn Tuấn Khôi-Lead HCM' },
-      { email: 'customerservice.hcm@eiv.edu.vn', name: 'Phan Thị Thùy Linh-SALE HCM' },
+      { email: 'sale.hcm2@eiv.edu.vn', name: 'Nguyễn Thị Thiên Ân-Sale HCM' },
     ],
     lienQuan: [{ email: 'lead.hcm@eiv.edu.vn', name: 'Nguyễn Tuấn Khôi-Lead HCM' }],
   },
