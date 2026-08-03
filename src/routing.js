@@ -33,7 +33,7 @@ export function matchBranch(diaChi, tinhThanh) {
   return null;
 }
 
-const ONE_TO_ONE_RE = /(1\s*(kem|k|x)?\s*1|mot\s*kem\s*mot|one[\s-]?to[\s-]?one)/;
+const ONE_TO_ONE_RE = /(1\s*(-|kem|k|x)?\s*1|mot\s*kem\s*mot|one[\s-]?to[\s-]?one)/;
 const ONLINE_RE = /\bonline\b|truc tuyen/;
 const OFFLINE_RE = /\boffline\b|truc tiep/;
 const KID_RE = /\b(kid|kids|be|tre em|thieu nhi|nhoc)\b/;
