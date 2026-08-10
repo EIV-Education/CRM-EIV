@@ -49,7 +49,11 @@ export function matchGroup(quanTam) {
   const t = normalizeVN(quanTam);
   if (!t) return null;
 
-  const isSchool = containsPhrase(t, 'truong hoc') || t.includes('cung cap giao vien');
+  const isSchool =
+    containsPhrase(t, 'truong hoc') ||
+    containsPhrase(t, 'mam non') ||
+    containsPhrase(t, 'mau giao') ||
+    t.includes('cung cap giao vien');
   const isCenter = containsPhrase(t, 'trung tam');
   const isEnterprise = t.includes('doanh nghiep');
   const isOneToOne = ONE_TO_ONE_RE.test(t);

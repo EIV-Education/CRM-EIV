@@ -72,6 +72,16 @@ test('matchGroup: truong hoc', () => {
   assert.equal(g.code, 'TRUONG_HOC');
 });
 
+test('matchGroup: truong mam non (khong noi "truong hoc") -> TRUONG_HOC', () => {
+  const g = matchGroup('Khach can tim teacher cho Truong mam non full time.');
+  assert.equal(g.code, 'TRUONG_HOC');
+});
+
+test('matchGroup: truong mau giao -> TRUONG_HOC', () => {
+  const g = matchGroup('Can giao vien cho truong mau giao');
+  assert.equal(g.code, 'TRUONG_HOC');
+});
+
 test('matchGroup: trung tam -> TTAN', () => {
   const g = matchGroup('Trung tam ngoai ngu can hop tac');
   assert.equal(g.code, 'TTAN');
