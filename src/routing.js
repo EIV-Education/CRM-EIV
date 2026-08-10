@@ -56,10 +56,13 @@ export function matchGroup(quanTam) {
     t.includes('cung cap giao vien');
   const isCenter = containsPhrase(t, 'trung tam');
   const isEnterprise = t.includes('doanh nghiep');
-  const isOneToOne = ONE_TO_ONE_RE.test(t);
   const isOnline = ONLINE_RE.test(t);
   const isOffline = OFFLINE_RE.test(t);
   const isKid = KID_RE.test(t) || GRADE_RE.test(t) || containsPhrase(t, 'cho con');
+  // "hoc kem" (hoc + duoc kem cap rieng) la cach noi tat cua "1 kem 1" du
+  // khong co so "1" - nhung chi tinh la tin hieu 1-kem-1 khi KHONG co dau
+  // hieu tre em di kem (uu tien phan loai theo doi tuong tre em hon).
+  const isOneToOne = ONE_TO_ONE_RE.test(t) || (containsPhrase(t, 'hoc kem') && !isKid);
   const isTaiNha = containsPhrase(t, 'tai nha') || containsPhrase(t, 'o nha');
 
   if (isSchool) return byCode('TRUONG_HOC');

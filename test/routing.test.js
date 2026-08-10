@@ -107,6 +107,11 @@ test('matchGroup: "1-1" (dau gach ngang) -> van nhan dien la 1 kem 1, mac dinh O
   assert.equal(g.code, 'OTO_OFFLINE');
 });
 
+test('matchGroup: "hoc kem ... online" (khong so "1", khong dau hieu tre em) -> OTO_ONLINE', () => {
+  const g = matchGroup('Hoc kem tieng Anh Online');
+  assert.equal(g.code, 'OTO_ONLINE');
+});
+
 test('matchGroup: doanh nghiep', () => {
   const g = matchGroup('Cong ty can dao tao tieng Anh doanh nghiep cho nhan vien');
   assert.equal(g.code, 'DOANH_NGHIEP');
