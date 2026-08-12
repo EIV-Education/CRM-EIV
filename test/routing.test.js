@@ -82,6 +82,16 @@ test('matchGroup: truong mau giao -> TRUONG_HOC', () => {
   assert.equal(g.code, 'TRUONG_HOC');
 });
 
+test('matchGroup: "Tieng Anh lien ket cho hoc sinh Trung hoc co so" -> TRUONG_HOC', () => {
+  const g = matchGroup('Tieng anh lien ket cho hoc sinh Trung hoc co so');
+  assert.equal(g.code, 'TRUONG_HOC');
+});
+
+test('matchGroup: THPT/tieu hoc (viet tat cap hoc) -> TRUONG_HOC', () => {
+  assert.equal(matchGroup('Can giao vien tieng Anh cho khoi THPT').code, 'TRUONG_HOC');
+  assert.equal(matchGroup('Chuong trinh lien ket cho hoc sinh tieu hoc').code, 'TRUONG_HOC');
+});
+
 test('matchGroup: trung tam -> TTAN', () => {
   const g = matchGroup('Trung tam ngoai ngu can hop tac');
   assert.equal(g.code, 'TTAN');

@@ -53,6 +53,11 @@ export function matchGroup(quanTam) {
     containsPhrase(t, 'truong hoc') ||
     containsPhrase(t, 'mam non') ||
     containsPhrase(t, 'mau giao') ||
+    containsPhrase(t, 'tieu hoc') ||
+    containsPhrase(t, 'trung hoc co so') ||
+    containsPhrase(t, 'trung hoc pho thong') ||
+    containsPhrase(t, 'thcs') ||
+    containsPhrase(t, 'thpt') ||
     t.includes('cung cap giao vien');
   const isCenter = containsPhrase(t, 'trung tam');
   const isEnterprise = t.includes('doanh nghiep');
