@@ -32,6 +32,12 @@ test('matchBranch: dia chi lan can mien Bac (Bac Ninh) -> EIV_HN', () => {
   assert.equal(b.code, 'EIV_HN');
 });
 
+test('matchBranch: viet tat DN/HCM/HN -> dung chi nhanh', () => {
+  assert.equal(matchBranch('ĐN').code, 'EIV_DN');
+  assert.equal(matchBranch('HCM').code, 'EIV_HCM');
+  assert.equal(matchBranch('HN').code, 'EIV_HN');
+});
+
 test('matchBranch: khong nhan dien duoc tra ve null', () => {
   const b = matchBranch('Singapore');
   assert.equal(b, null);

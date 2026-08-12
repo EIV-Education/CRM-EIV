@@ -102,6 +102,7 @@ export const BRANCHES = [
     maChiNhanh: '43',
     provinces: [
       'da nang',
+      'dn',
       'quang nam',
       'quang ngai',
       'quang tri',
@@ -171,6 +172,7 @@ export const BRANCHES = [
     maChiNhanh: '29',
     provinces: [
       'ha noi',
+      'hn',
       'hai phong',
       'quang ninh',
       'bac ninh',
