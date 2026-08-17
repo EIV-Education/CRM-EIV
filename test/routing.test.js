@@ -128,6 +128,13 @@ test('matchGroup: "hoc kem ... online" (khong so "1", khong dau hieu tre em) -> 
   assert.equal(g.code, 'OTO_ONLINE');
 });
 
+test('matchGroup: "Odyssey International School...truong quoc te" -> TRUONG_HOC', () => {
+  const g = matchGroup(
+    'Odyssey International School tai Da Nang can tuyen/sap xep giao vien day tai truong: full time day Toan + PE hoac part time neu chi day Toan; chuong trinh IB, cap hoc/truong quoc te.',
+  );
+  assert.equal(g.code, 'TRUONG_HOC');
+});
+
 test('matchGroup: doanh nghiep', () => {
   const g = matchGroup('Cong ty can dao tao tieng Anh doanh nghiep cho nhan vien');
   assert.equal(g.code, 'DOANH_NGHIEP');

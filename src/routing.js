@@ -58,6 +58,8 @@ export function matchGroup(quanTam) {
     containsPhrase(t, 'trung hoc pho thong') ||
     containsPhrase(t, 'thcs') ||
     containsPhrase(t, 'thpt') ||
+    containsPhrase(t, 'truong quoc te') ||
+    t.includes('international school') ||
     t.includes('cung cap giao vien');
   const isCenter = containsPhrase(t, 'trung tam');
   const isEnterprise = t.includes('doanh nghiep');
