@@ -61,7 +61,9 @@ export function matchGroup(quanTam) {
     containsPhrase(t, 'truong quoc te') ||
     t.includes('international school') ||
     t.includes('cung cap giao vien');
-  const isCenter = containsPhrase(t, 'trung tam');
+  // "hoc theo lop" (hoc theo dang lop/nhom, khong phai 1 kem 1) la mo ta
+  // hinh thuc hoc kieu trung tam Anh ngu du khong noi thang "trung tam".
+  const isCenter = containsPhrase(t, 'trung tam') || containsPhrase(t, 'theo lop');
   const isEnterprise = t.includes('doanh nghiep');
   const isOnline = ONLINE_RE.test(t);
   const isOffline = OFFLINE_RE.test(t);

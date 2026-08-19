@@ -103,6 +103,13 @@ test('matchGroup: trung tam -> TTAN', () => {
   assert.equal(g.code, 'TTAN');
 });
 
+test('matchGroup: "hoc theo lop, offline" (khong noi "trung tam") -> TTAN', () => {
+  const g = matchGroup(
+    'Khach quan tam hoc tieng Anh theo lop, offline tai Ha Noi; truoc do hoi ve tieng Anh chuyen nganh cong nghe thong tin va lich lop sap khai giang.',
+  );
+  assert.equal(g.code, 'TTAN');
+});
+
 test('matchGroup: 1 kem 1 online -> OTO_ONLINE', () => {
   const g = matchGroup('Muon hoc 1 kem 1 online voi giao vien nuoc ngoai');
   assert.equal(g.code, 'OTO_ONLINE');
