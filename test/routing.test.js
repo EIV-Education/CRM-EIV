@@ -148,6 +148,11 @@ test('matchGroup: doanh nghiep', () => {
   assert.equal(g.label, 'DOANH NGHIỆP');
 });
 
+test('matchGroup: "ngan hang de thi TOEIC cho cong ty" (khong noi "doanh nghiep") -> DOANH_NGHIEP', () => {
+  const g = matchGroup('Hoi giai phap/dich vu cung cap ngan hang de thi va on thi TOEIC cho cong ty.');
+  assert.equal(g.code, 'DOANH_NGHIEP');
+});
+
 test('matchGroup: truong hoc co label chinh xac co dau', () => {
   const g = matchGroup('Can giao vien tieng Anh cho truong hoc');
   assert.equal(g.label, 'TRƯỜNG HỌC');
