@@ -144,6 +144,7 @@ export const BRANCHES = [
       'thu duc',
       'binh duong',
       'dong nai',
+      'long thanh',
       'ba ria vung tau',
       'vung tau',
       'long an',
