@@ -142,6 +142,7 @@ export const BRANCHES = [
       'hcm',
       'sai gon',
       'thu duc',
+      'phu thuan',
       'binh duong',
       'dong nai',
       'long thanh',
