@@ -12,6 +12,12 @@ function containsPhrase(text, phrase) {
   return re.test(text);
 }
 
+// "Quan 1".."Quan 12" (quan danh so) chi ton tai o TP.HCM trong cach dat
+// ten quan/huyen cua Viet Nam - Da Nang/Ha Noi dung ten chu (Hai Chau,
+// Cau Giay...) chu khong danh so, nen day la dau hieu rieng, an toan de
+// suy ra HCM du khong noi ro "Ho Chi Minh"/"tphcm".
+const HCM_NUMBERED_DISTRICT_RE = /\bquan\s*(1[0-2]|[1-9])\b/;
+
 // Uu tien tra chi nhanh tu "Dia chi" (text tu do nhan vien/lead dien, theo
 // thuc te la nguon dang tin cay hon) - chi khi khong co/khong khop moi
 // fallback sang Single Select "Tinh/Thanh pho" (hay bi bo trong hoac chon
@@ -21,6 +27,9 @@ export function matchBranch(diaChi, tinhThanh) {
   if (t) {
     for (const branch of BRANCHES) {
       if (branch.provinces.some((p) => containsPhrase(t, p))) return branch;
+    }
+    if (HCM_NUMBERED_DISTRICT_RE.test(t)) {
+      return BRANCHES.find((b) => b.code === 'EIV_HCM') || null;
     }
   }
 
