@@ -22,8 +22,9 @@ on:
           - find-lead
           - backfill-people
           - check-email-detail
+          - force-route
       arg:
-        description: 'Tu khoa tim kiem - chi dung cho script find-lead (vi du so dien thoai hoac ten)'
+        description: 'find-lead/check-email-detail: tu khoa hoac email. force-route: "<record_id> <branch_code>" (vi du "recvXXXX EIV_HCM")'
         required: false
         default: ''
 
@@ -49,5 +50,6 @@ jobs:
             find-lead) node scripts/find-lead.mjs "${{ github.event.inputs.arg }}" ;;
             backfill-people) node scripts/backfill-people.mjs ;;
             check-email-detail) node scripts/check-email-detail.mjs "${{ github.event.inputs.arg }}" ;;
+            force-route) node scripts/force-route.mjs ${{ github.event.inputs.arg }} ;;
             *) node scripts/poll-and-route.mjs ;;
           esac
