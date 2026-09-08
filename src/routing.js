@@ -60,8 +60,11 @@ export function matchGroup(quanTam) {
 
   const isSchool =
     containsPhrase(t, 'truong hoc') ||
-    containsPhrase(t, 'mam non') ||
-    containsPhrase(t, 'mau giao') ||
+    // Phai co "truong" di kem - "tre mam non"/"be mau giao" mo ta DO TUOI
+    // cua tre (vi du xin gia su day tai nha) khong phai xin giao vien CHO
+    // 1 truong mam non/mau giao (2 y nghia rat khac nhau).
+    containsPhrase(t, 'truong mam non') ||
+    containsPhrase(t, 'truong mau giao') ||
     containsPhrase(t, 'tieu hoc') ||
     containsPhrase(t, 'trung hoc co so') ||
     containsPhrase(t, 'trung hoc pho thong') ||
