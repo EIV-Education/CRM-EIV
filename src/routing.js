@@ -72,7 +72,11 @@ export function matchGroup(quanTam) {
     containsPhrase(t, 'thpt') ||
     containsPhrase(t, 'truong quoc te') ||
     t.includes('international school') ||
-    t.includes('cung cap giao vien');
+    // "cung cap"/"cung ung" giao vien = tin hieu ro rang la xin GV CHO 1
+    // co so/don vi (khong phai mo ta do tuoi tre) - an toan de suy ra
+    // TRUONG_HOC ke ca khi co so do la "co so mam non" (khong co "truong").
+    t.includes('cung cap giao vien') ||
+    t.includes('cung ung giao vien');
   // "hoc theo lop" (hoc theo dang lop/nhom, khong phai 1 kem 1) la mo ta
   // hinh thuc hoc kieu trung tam Anh ngu du khong noi thang "trung tam".
   const isCenter = containsPhrase(t, 'trung tam') || containsPhrase(t, 'theo lop');

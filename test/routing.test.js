@@ -115,6 +115,13 @@ test('matchGroup: "be...tre mam non" (do tuoi cua tre, khong phai xin GV cho tru
   assert.equal(g.code, 'KIDS_OFF');
 });
 
+test('matchGroup: "cung ung giao vien... co so mam non" (xin GV cho 1 co so, khong noi "truong") -> TRUONG_HOC', () => {
+  const g = matchGroup(
+    'Can thong tin cung ung giao vien nuoc ngoai cho co so mam non. Khach hoi thoi luong 1 tiet bao nhieu phut.',
+  );
+  assert.equal(g.code, 'TRUONG_HOC');
+});
+
 test('matchGroup: "Tieng Anh lien ket cho hoc sinh Trung hoc co so" -> TRUONG_HOC', () => {
   const g = matchGroup('Tieng anh lien ket cho hoc sinh Trung hoc co so');
   assert.equal(g.code, 'TRUONG_HOC');
