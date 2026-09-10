@@ -99,6 +99,7 @@ export function matchGroup(quanTam) {
   if (isEnterprise) return byCode('DOANH_NGHIEP');
   if (isKid && isOnline) return byCode('KIDS_ONL');
   if (isKid && isTaiNha) return byCode('KIDS_OFF');
+  if (isKid) return byCode('KIDS_ONL'); // mac dinh online khi la tre em nhung khong noi ro hinh thuc
   return null;
 }
 
