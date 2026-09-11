@@ -7,11 +7,10 @@
 // Chay: LARK_APP_ID=... node scripts/force-route.mjs <record_id> <branch_code>
 // vi du: node scripts/force-route.mjs recvXXXXXXXX EIV_HCM
 
-import { LARK_BASE_APP_TOKEN, LARK_LEAD_TABLE_ID, FIELD_NAMES, BRANCHES } from '../src/config.js';
+import { LARK_BASE_APP_TOKEN, LARK_LEAD_TABLE_ID, FIELD_NAMES, BRANCHES, PENDING_GROUP_LABEL } from '../src/config.js';
 import { matchGroup, nextStt } from '../src/routing.js';
 import { searchRecords, updateRecord, extractText } from '../src/larkApi.js';
-import { resolveAllEmails, fetchNhomKHLabelToRecordId, extractExistingMaKH, extractLinkRecordIds } from '../src/leadProcessor.js';
-import { PENDING_GROUP_LABEL } from '../src/config.js';
+import { resolveAllEmails, extractExistingMaKH } from '../src/leadProcessor.js';
 
 function peopleIds(people, emailToOpenId) {
   return people
@@ -35,9 +34,8 @@ async function main() {
     process.exit(1);
   }
 
-  const [emailToOpenId, nhomKHLabelToRecordId, allRecords] = await Promise.all([
+  const [emailToOpenId, allRecords] = await Promise.all([
     resolveAllEmails(),
-    fetchNhomKHLabelToRecordId(),
     searchRecords(LARK_BASE_APP_TOKEN, LARK_LEAD_TABLE_ID, {}),
   ]);
 
@@ -47,8 +45,8 @@ async function main() {
     process.exit(1);
   }
 
-  const pendingId = nhomKHLabelToRecordId[PENDING_GROUP_LABEL];
-  const isPending = pendingId && extractLinkRecordIds(record.fields[FIELD_NAMES.nhomKH]).includes(pendingId);
+  // Nhom KH gio la Single Select nen so text truc tiep.
+  const isPending = extractText(record.fields[FIELD_NAMES.nhomKH]) === PENDING_GROUP_LABEL;
   if (!isPending) {
     console.error(`Record ${recordId} khong con o trang thai CHO PHAN LOAI - dung lai de tranh ghi nham.`);
     process.exit(1);
@@ -58,12 +56,6 @@ async function main() {
   const group = matchGroup(quanTam);
   if (!group) {
     console.error(`Khong xac dinh duoc Nhom KH tu Mo ta: "${quanTam}" - dung lai, can sua matchGroup truoc.`);
-    process.exit(1);
-  }
-
-  const nhomKHRecordId = nhomKHLabelToRecordId[group.label];
-  if (!nhomKHRecordId) {
-    console.error(`Khong tim thay record_id cho nhom "${group.label}" trong bang lien ket.`);
     process.exit(1);
   }
 
@@ -77,7 +69,7 @@ async function main() {
   await updateRecord(LARK_BASE_APP_TOKEN, LARK_LEAD_TABLE_ID, recordId, {
     [FIELD_NAMES.maKH]: maKH,
     [FIELD_NAMES.chiNhanh]: branch.label,
-    [FIELD_NAMES.nhomKH]: [nhomKHRecordId],
+    [FIELD_NAMES.nhomKH]: group.label,
     [FIELD_NAMES.nguoiPhuTrach]: peopleIds(branch.phuTrach, emailToOpenId),
     [FIELD_NAMES.nguoiLienQuan]: peopleIds(branch.lienQuan, emailToOpenId),
   });

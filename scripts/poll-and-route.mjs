@@ -19,7 +19,7 @@ async function main() {
   log(DRY_RUN ? 'Chay o che do DRY_RUN (khong ghi du lieu that).' : 'Bat dau quet lead cho phan loai...');
 
   const ctx = await buildCtx({ dryRun: DRY_RUN, log });
-  const pendingLeads = ctx.allRecords.filter((r) => isPending(r, ctx.nhomKHLabelToRecordId));
+  const pendingLeads = ctx.allRecords.filter((r) => isPending(r));
 
   log(`Tim thay ${pendingLeads.length} lead dang cho phan loai (tren tong ${ctx.allRecords.length} lead).`);
 

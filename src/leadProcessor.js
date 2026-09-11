@@ -7,8 +7,6 @@ import {
   BRANCHES,
   LARK_BASE_APP_TOKEN,
   LARK_LEAD_TABLE_ID,
-  NHOM_KH_LINK_TABLE_ID,
-  NHOM_KH_PRIMARY_FIELD,
   NOTIFY_CHAT_ID,
   FIELD_NAMES,
   PENDING_GROUP_LABEL,
@@ -19,7 +17,6 @@ import {
   sendTextMessage,
   resolveOpenIdsByEmail,
   extractText,
-  extractLinkRecordIds,
 } from './larkApi.js';
 
 export async function fetchAllLeadRecords() {
@@ -33,25 +30,11 @@ export function extractExistingMaKH(allRecords) {
   return allRecords.map((r) => extractText(r.fields[FIELD_NAMES.maKH])).filter(Boolean);
 }
 
-// Nhom KH la field Link - gia tri doc ve co the la { link_record_ids: [...] }
-// (khong co .text san, dac biet voi record moi tao chua duoc Lark cache
-// display text) nen KHONG the so sanh bang extractText() nhu cac field
-// text thuong. Phai so theo record_id thuc su cua "CHO PHAN LOAI" trong
-// bang lien ket (nhomKHLabelToRecordId, lay tu buildCtx/fetchNhomKHLabelToRecordId).
-export function isPending(record, nhomKHLabelToRecordId) {
-  const pendingId = nhomKHLabelToRecordId?.[PENDING_GROUP_LABEL];
-  if (!pendingId) return false;
-  return extractLinkRecordIds(record.fields[FIELD_NAMES.nhomKH]).includes(pendingId);
-}
-
-export async function fetchNhomKHLabelToRecordId() {
-  const rows = await searchRecords(LARK_BASE_APP_TOKEN, NHOM_KH_LINK_TABLE_ID, {});
-  const map = {};
-  for (const row of rows) {
-    const label = extractText(row.fields[NHOM_KH_PRIMARY_FIELD]);
-    if (label) map[label] = row.record_id;
-  }
-  return map;
+// Nhom KH gio la field Single Select (truoc day la Link toi 1 bang rieng) -
+// gia tri doc ve la text thuong nen so truc tiep bang extractText(), khong
+// can tra qua bang lien ket/record_id nua.
+export function isPending(record) {
+  return extractText(record.fields[FIELD_NAMES.nhomKH]) === PENDING_GROUP_LABEL;
 }
 
 export async function resolveAllEmails() {
@@ -75,7 +58,7 @@ function peopleField(people, emailToOpenId, log) {
   return ids;
 }
 
-// ctx = { dryRun, log, emailToOpenId, nhomKHLabelToRecordId, existingMaKH }
+// ctx = { dryRun, log, emailToOpenId, existingMaKH }
 // `existingMaKH` la mang co the bi mutate (push them ma vua sinh) de tranh
 // trung ma khi xu ly nhieu lead cung mot lan chay.
 //
@@ -101,17 +84,11 @@ async function handleUnmatched(record, result, diaChi, quanTam, tinhThanh, ctx) 
 }
 
 async function handleMatched(record, result, diaChi, quanTam, ctx) {
-  const { dryRun, log, emailToOpenId, nhomKHLabelToRecordId, existingMaKH } = ctx;
+  const { dryRun, log, emailToOpenId, existingMaKH } = ctx;
   const branch = BRANCHES.find((b) => b.code === result.chiNhanhCode);
   const stt = nextStt(existingMaKH, result.prefix);
   const maKH = `${result.prefix}${String(stt).padStart(4, '0')}`;
   existingMaKH.push(maKH);
-
-  const nhomKHRecordId = nhomKHLabelToRecordId[result.nhomKHLabel];
-  if (!nhomKHRecordId) {
-    log(`  LOI: khong tim thay record_id cho nhom "${result.nhomKHLabel}" trong bang lien ket - bo qua lead ${record.record_id}`);
-    return;
-  }
 
   log(`Phan luong lead ${record.record_id} -> ${maKH} / ${result.chiNhanhLabel} / ${result.nhomKHLabel}`);
   if (dryRun) return;
@@ -119,7 +96,7 @@ async function handleMatched(record, result, diaChi, quanTam, ctx) {
   await updateRecord(LARK_BASE_APP_TOKEN, LARK_LEAD_TABLE_ID, record.record_id, {
     [FIELD_NAMES.maKH]: maKH,
     [FIELD_NAMES.chiNhanh]: result.chiNhanhLabel,
-    [FIELD_NAMES.nhomKH]: [nhomKHRecordId],
+    [FIELD_NAMES.nhomKH]: result.nhomKHLabel,
     [FIELD_NAMES.nguoiPhuTrach]: peopleField(branch.phuTrach, emailToOpenId, log),
     [FIELD_NAMES.nguoiLienQuan]: peopleField(branch.lienQuan, emailToOpenId, log),
   });
@@ -131,22 +108,17 @@ async function handleMatched(record, result, diaChi, quanTam, ctx) {
   }
 }
 
-// Gom 3 fetch dung chung (map nguoi dung, map nhom KH, toan bo Ma KH hien
-// co) thanh 1 ctx dung duoc cho ca quet dinh ky lan xu ly 1 lead tu
-// webhook. Fetch full bang Lead moi lan goi (~vai giay voi vai nghin
-// dong) - chap nhan duoc vi day la automation chay nen, khong phai thao
-// tac dong bo can phan hoi tuc thi cho nguoi dung.
+// Gom 2 fetch dung chung (map nguoi dung, toan bo Ma KH hien co) thanh 1
+// ctx dung duoc cho ca quet dinh ky lan xu ly 1 lead tu webhook. Fetch full
+// bang Lead moi lan goi (~vai giay voi vai nghin dong) - chap nhan duoc vi
+// day la automation chay nen, khong phai thao tac dong bo can phan hoi
+// tuc thi cho nguoi dung.
 export async function buildCtx({ dryRun, log }) {
-  const [emailToOpenId, nhomKHLabelToRecordId, allRecords] = await Promise.all([
-    resolveAllEmails(),
-    fetchNhomKHLabelToRecordId(),
-    fetchAllLeadRecords(),
-  ]);
+  const [emailToOpenId, allRecords] = await Promise.all([resolveAllEmails(), fetchAllLeadRecords()]);
   return {
     dryRun,
     log,
     emailToOpenId,
-    nhomKHLabelToRecordId,
     existingMaKH: extractExistingMaKH(allRecords),
     allRecords,
   };

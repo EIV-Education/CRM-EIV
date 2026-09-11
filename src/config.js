@@ -25,12 +25,10 @@ export const FIELD_NAMES = {
 
 export const PENDING_GROUP_LABEL = process.env.PENDING_GROUP_LABEL || 'CHỜ PHÂN LOẠI';
 
-// "Nhóm KH" trong bang Lead la field Link (type=18) tro toi bang rieng
-// (lay qua scripts/inspect-base.mjs), cot hien thi ten la "Văn bản". Ghi
-// gia tri cho field nay phai dung record_id cua bang lien ket, khong phai
-// text (xem src/larkApi.js + scripts/poll-and-route.mjs).
-export const NHOM_KH_LINK_TABLE_ID = process.env.LARK_NHOM_KH_TABLE_ID || 'tblSvgMsElhtbGol';
-export const NHOM_KH_PRIMARY_FIELD = process.env.NHOM_KH_PRIMARY_FIELD || 'Văn bản';
+// "Nhóm KH" trong bang Lead la field Single Select (type=3) - truoc day la
+// Link (type=18) tro toi 1 bang rieng, nhung da doi lai (xem
+// scripts/inspect-base.mjs). Ghi/doc gia tri cho field nay dung text (label
+// option) truc tiep, khong con can tra qua record_id cua bang lien ket nua.
 
 // Tra chi nhanh truc tiep tu gia tri (da chuan hoa, khong dau, viet
 // thuong) cua Single Select "Tỉnh/Thành phố" - dang tin cay hon nhieu so

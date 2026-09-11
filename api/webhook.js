@@ -52,13 +52,16 @@ export default async function handler(req, res) {
       return;
     }
 
-    const ctx = await buildCtx({ dryRun: false, log });
-    if (!isPending(record, ctx.nhomKHLabelToRecordId)) {
+    // Nhom KH gio la Single Select nen kiem tra pending truc tiep tu record
+    // vua fetch, khong can buildCtx() (fetch toan bo bang Lead + resolve
+    // email) truoc - danh gia truoc de tranh lam viec thua khi lead da xu ly.
+    if (!isPending(record)) {
       log(`Lead ${recordId} da duoc xu ly truoc do, bo qua.`);
       res.status(200).json({ ok: true, skipped: true });
       return;
     }
 
+    const ctx = await buildCtx({ dryRun: false, log });
     await processLead(record, ctx);
 
     res.status(200).json({ ok: true });

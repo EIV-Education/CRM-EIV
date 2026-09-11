@@ -100,12 +100,11 @@ Với lịch quét 5 phút, nếu nhiều lead cùng gặp 1 lỗi trong 1 lần
 gộp lại thành **1 tin nhắn tổng hợp** (liệt kê tối đa 5 lead đầu, còn lại
 ghi số lượng) thay vì gửi lặp lại nhiều lần, tránh spam nhóm chat.
 
-> ⚠️ Field **"Nhóm KH" trong bảng Lead là Link (liên kết tới bảng riêng
-> `Nhóm KH`)**, không phải Single Select — bot tự tra `record_id` tương
-> ứng với từng nhãn qua bảng đó mỗi lần chạy (`NHOM_KH_LINK_TABLE_ID` +
-> `NHOM_KH_PRIMARY_FIELD` trong `src/config.js`), không cần bạn cấu hình
-> gì thêm. Nhãn 7 nhóm trong `src/config.js` (`GROUPS[].label`) đã đối
-> chiếu đúng với dữ liệu thật trong bảng liên kết đó bằng
+> Field **"Nhóm KH" trong bảng Lead là Single Select** (trước đây từng là
+> Link liên kết tới 1 bảng riêng, nay đã đổi lại — xem `src/config.js`).
+> Bot đọc/ghi trực tiếp text (label option) cho field này, không cần tra
+> qua `record_id` của bảng liên kết nữa. Nhãn 7 nhóm trong `src/config.js`
+> (`GROUPS[].label`) đã đối chiếu đúng với các option thật của field bằng
 > `node scripts/inspect-base.mjs`.
 
 **Mã KH** = `<mã nhóm KH>-<mã chi nhánh><STT 4 số>`
@@ -138,8 +137,8 @@ thêm cho phần này.
 LARK_APP_ID=... LARK_APP_SECRET=... node scripts/inspect-base.mjs
 ```
 
-In ra toàn bộ tên trường, option, và (với field Link như "Nhóm KH") cả
-record_id của bảng liên kết, để đối chiếu với `src/config.js`
+In ra toàn bộ tên trường, kiểu field, và option (với field Single Select
+như "Nhóm KH"), để đối chiếu với `src/config.js`
 (`FIELD_NAMES`, `GROUPS[].label`, `BRANCHES[].label`). Nếu lệnh báo lỗi
 quyền truy cập, quay lại bước 2 ở mục 0 (thêm App vào Base). Đã chạy và
 đối chiếu 1 lần — tên field/nhãn hiện tại trong `config.js` đã khớp với
