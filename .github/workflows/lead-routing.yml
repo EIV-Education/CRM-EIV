@@ -23,8 +23,9 @@ on:
           - backfill-people
           - check-email-detail
           - force-route
+          - recent-leads
       arg:
-        description: 'find-lead/check-email-detail: tu khoa hoac email. force-route: "<record_id> <branch_code>" (vi du "recvXXXX EIV_HCM")'
+        description: 'find-lead/check-email-detail: tu khoa hoac email. force-route: "<record_id> <branch_code>". recent-leads: so luong (mac dinh 10)'
         required: false
         default: ''
 
@@ -51,5 +52,6 @@ jobs:
             backfill-people) node scripts/backfill-people.mjs ;;
             check-email-detail) node scripts/check-email-detail.mjs "${{ github.event.inputs.arg }}" ;;
             force-route) node scripts/force-route.mjs ${{ github.event.inputs.arg }} ;;
+            recent-leads) node scripts/recent-leads.mjs "${{ github.event.inputs.arg }}" ;;
             *) node scripts/poll-and-route.mjs ;;
           esac
