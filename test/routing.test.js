@@ -169,6 +169,13 @@ test('matchGroup: "hoc kem ... online" (khong so "1", khong dau hieu tre em) -> 
   assert.equal(g.code, 'OTO_ONLINE');
 });
 
+test('matchGroup: "luyen phong van xin visa...hoc online" -> OTO_ONLINE', () => {
+  const g = matchGroup(
+    'muon tu van khoa luyen phong van xin visa cong tac US bang tieng Anh online, du kien phong van cuoi thang nay; khach can hoc online, thoi gian kha gap',
+  );
+  assert.equal(g.code, 'OTO_ONLINE');
+});
+
 test('matchGroup: "Odyssey International School...truong quoc te" -> TRUONG_HOC', () => {
   const g = matchGroup(
     'Odyssey International School tai Da Nang can tuyen/sap xep giao vien day tai truong: full time day Toan + PE hoac part time neu chi day Toan; chuong trinh IB, cap hoc/truong quoc te.',

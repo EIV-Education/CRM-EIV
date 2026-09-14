@@ -86,10 +86,15 @@ export function matchGroup(quanTam) {
   const isOnline = ONLINE_RE.test(t);
   const isOffline = OFFLINE_RE.test(t);
   const isKid = KID_RE.test(t) || GRADE_RE.test(t) || containsPhrase(t, 'cho con');
+  // "luyen phong van" (luyen phong van xin visa/xin viec...) la khoa hoc
+  // ca nhan hoa theo muc tieu rieng cua tung nguoi (khong phai hoc theo
+  // lop/nhom co dinh) - tuong duong tin hieu 1-kem-1 du khong noi ro so
+  // "1". Cung ap dung guard !isKid nhu "hoc kem".
+  const isInterviewPrep = containsPhrase(t, 'phong van');
   // "hoc kem" (hoc + duoc kem cap rieng) la cach noi tat cua "1 kem 1" du
   // khong co so "1" - nhung chi tinh la tin hieu 1-kem-1 khi KHONG co dau
   // hieu tre em di kem (uu tien phan loai theo doi tuong tre em hon).
-  const isOneToOne = ONE_TO_ONE_RE.test(t) || (containsPhrase(t, 'hoc kem') && !isKid);
+  const isOneToOne = ONE_TO_ONE_RE.test(t) || ((containsPhrase(t, 'hoc kem') || isInterviewPrep) && !isKid);
   const isTaiNha = containsPhrase(t, 'tai nha') || containsPhrase(t, 'o nha');
 
   if (isSchool) return byCode('TRUONG_HOC');
