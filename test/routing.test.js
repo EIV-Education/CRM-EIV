@@ -194,6 +194,13 @@ test('matchGroup: "ngan hang de thi TOEIC cho cong ty" (khong noi "doanh nghiep"
   assert.equal(g.code, 'DOANH_NGHIEP');
 });
 
+test('matchGroup: "ho kinh doanh" can GV ban ngu -> DOANH_NGHIEP', () => {
+  const g = matchGroup(
+    'Can giao vien ban ngu 4.5 tieng/tuan cho ho kinh doanh. Khach la ho kinh doanh, can tu van sap xep giao vien ban ngu theo tuan',
+  );
+  assert.equal(g.code, 'DOANH_NGHIEP');
+});
+
 test('matchGroup: truong hoc co label chinh xac co dau', () => {
   const g = matchGroup('Can giao vien tieng Anh cho truong hoc');
   assert.equal(g.label, 'TRƯỜNG HỌC');

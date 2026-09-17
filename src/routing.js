@@ -81,8 +81,12 @@ export function matchGroup(quanTam) {
   // hinh thuc hoc kieu trung tam Anh ngu du khong noi thang "trung tam".
   const isCenter = containsPhrase(t, 'trung tam') || containsPhrase(t, 'theo lop');
   // "cho cong ty" (dich vu/giai phap phuc vu 1 cong ty) la tin hieu doanh
-  // nghiep tuong duong "doanh nghiep" du khong dung dung tu nay.
-  const isEnterprise = t.includes('doanh nghiep') || containsPhrase(t, 'cho cong ty');
+  // nghiep tuong duong "doanh nghiep" du khong dung dung tu nay. "ho kinh
+  // doanh" (loai hinh kinh doanh ca nhan/gia dinh, khac cong ty ve phap
+  // ly nhung van la 1 don vi kinh doanh can GV cho hoat dong cua ho) cung
+  // xep vao day.
+  const isEnterprise =
+    t.includes('doanh nghiep') || containsPhrase(t, 'cho cong ty') || containsPhrase(t, 'ho kinh doanh');
   const isOnline = ONLINE_RE.test(t);
   const isOffline = OFFLINE_RE.test(t);
   const isKid = KID_RE.test(t) || GRADE_RE.test(t) || containsPhrase(t, 'cho con');
