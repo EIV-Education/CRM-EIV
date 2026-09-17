@@ -24,8 +24,9 @@ on:
           - check-email-detail
           - force-route
           - recent-leads
+          - get-lead
       arg:
-        description: 'find-lead/check-email-detail: tu khoa hoac email. force-route: "<record_id> <branch_code>". recent-leads: so luong (mac dinh 10)'
+        description: 'find-lead/check-email-detail/get-lead: tu khoa/email/record_id. force-route: "<record_id> <branch_code>". recent-leads: so luong (mac dinh 10)'
         required: false
         default: ''
 
@@ -53,5 +54,6 @@ jobs:
             check-email-detail) node scripts/check-email-detail.mjs "${{ github.event.inputs.arg }}" ;;
             force-route) node scripts/force-route.mjs ${{ github.event.inputs.arg }} ;;
             recent-leads) node scripts/recent-leads.mjs "${{ github.event.inputs.arg }}" ;;
+            get-lead) node scripts/get-lead.mjs "${{ github.event.inputs.arg }}" ;;
             *) node scripts/poll-and-route.mjs ;;
           esac
