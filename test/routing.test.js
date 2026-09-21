@@ -52,6 +52,11 @@ test('matchBranch: dia chi lan can mien Bac (Bac Ninh) -> EIV_HN', () => {
   assert.equal(b.code, 'EIV_HN');
 });
 
+test('matchBranch: "Quan Long Bien" (quan thuoc Ha Noi, khong noi ro "Ha Noi") -> EIV_HN', () => {
+  const b = matchBranch('Khu do thi Binh Minh Garden, phuong Viet Hung, quan Long Bien');
+  assert.equal(b.code, 'EIV_HN');
+});
+
 test('matchBranch: viet tat DN/HCM/HN -> dung chi nhanh', () => {
   assert.equal(matchBranch('ĐN').code, 'EIV_DN');
   assert.equal(matchBranch('HCM').code, 'EIV_HCM');

@@ -173,6 +173,7 @@ export const BRANCHES = [
     provinces: [
       'ha noi',
       'hn',
+      'long bien',
       'hai phong',
       'quang ninh',
       'bac ninh',
