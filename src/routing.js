@@ -84,9 +84,16 @@ export function matchGroup(quanTam) {
   // nghiep tuong duong "doanh nghiep" du khong dung dung tu nay. "ho kinh
   // doanh" (loai hinh kinh doanh ca nhan/gia dinh, khac cong ty ve phap
   // ly nhung van la 1 don vi kinh doanh can GV cho hoat dong cua ho) cung
-  // xep vao day.
+  // xep vao day. "tieng anh nganh <nghe nghiep>" (vi du "nganh khach san")
+  // la tieng Anh chuyen nganh phuc vu cong viec cua nguoi lon dang di lam -
+  // xep chung nhom voi doanh nghiep (dao tao ky nang nghe nghiep), khac
+  // voi tieng Anh giao tiep pho thong.
   const isEnterprise =
-    t.includes('doanh nghiep') || containsPhrase(t, 'cho cong ty') || containsPhrase(t, 'ho kinh doanh');
+    t.includes('doanh nghiep') ||
+    containsPhrase(t, 'cho cong ty') ||
+    containsPhrase(t, 'ho kinh doanh') ||
+    containsPhrase(t, 'tieng anh nganh') ||
+    containsPhrase(t, 'anh van nganh');
   const isOnline = ONLINE_RE.test(t);
   const isOffline = OFFLINE_RE.test(t);
   const isKid = KID_RE.test(t) || GRADE_RE.test(t) || containsPhrase(t, 'cho con');
