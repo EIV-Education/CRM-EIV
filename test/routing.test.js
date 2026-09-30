@@ -57,6 +57,11 @@ test('matchBranch: "Quan Long Bien" (quan thuoc Ha Noi, khong noi ro "Ha Noi") -
   assert.equal(b.code, 'EIV_HN');
 });
 
+test('matchBranch: "Cau Giay" (quan thuoc Ha Noi, khong noi ro "Ha Noi") -> EIV_HN', () => {
+  const b = matchBranch('Yen Hoa, Cau Giay');
+  assert.equal(b.code, 'EIV_HN');
+});
+
 test('matchBranch: viet tat DN/HCM/HN -> dung chi nhanh', () => {
   assert.equal(matchBranch('ĐN').code, 'EIV_DN');
   assert.equal(matchBranch('HCM').code, 'EIV_HCM');
