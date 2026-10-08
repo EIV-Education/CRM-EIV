@@ -12,6 +12,11 @@ test('matchBranch: co dau tieng Viet van nhan dien dung', () => {
   assert.equal(b.code, 'EIV_DN');
 });
 
+test('matchBranch: "Mui Ne" (khu vuc thuoc Phan Thiet, Binh Thuan) -> EIV_DN', () => {
+  const b = matchBranch('Mũi Né');
+  assert.equal(b.code, 'EIV_DN');
+});
+
 test('matchBranch: Ho Chi Minh -> EIV_HCM', () => {
   const b = matchBranch('12 Nguyen Hue, Quan 1, TP Ho Chi Minh');
   assert.equal(b.code, 'EIV_HCM');

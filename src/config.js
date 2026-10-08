@@ -113,6 +113,8 @@ export const BRANCHES = [
       'khanh hoa',
       'ninh thuan',
       'binh thuan',
+      'phan thiet',
+      'mui ne',
       'kon tum',
       'gia lai',
       'dak lak',
