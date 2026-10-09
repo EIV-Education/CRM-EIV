@@ -47,6 +47,11 @@ test('matchBranch: "Phu Thuan" (phuong thuoc Quan 7, HCM) -> EIV_HCM', () => {
   assert.equal(b.code, 'EIV_HCM');
 });
 
+test('matchBranch: "Thao Dien" (phuong thuoc Thu Duc, HCM) -> EIV_HCM', () => {
+  const b = matchBranch('Thảo Điền');
+  assert.equal(b.code, 'EIV_HCM');
+});
+
 test('matchBranch: Ha Noi -> EIV_HN', () => {
   const b = matchBranch('Cau Giay, Ha Noi');
   assert.equal(b.code, 'EIV_HN');
@@ -176,6 +181,11 @@ test('matchGroup: 1 kem 1 khong ro hinh thuc -> mac dinh OTO_OFFLINE', () => {
 
 test('matchGroup: "1-1" (dau gach ngang) -> van nhan dien la 1 kem 1, mac dinh OTO_OFFLINE', () => {
   const g = matchGroup('Hoc TA 1-1; Giao tiep voi nguoi nuoc ngoai');
+  assert.equal(g.code, 'OTO_OFFLINE');
+});
+
+test('matchGroup: "1:1" (dau hai cham) -> van nhan dien la 1 kem 1, hoc truc tiep -> OTO_OFFLINE', () => {
+  const g = matchGroup('Can gia su 1:1 day phat am tieng Anh, hoc truc tiep.');
   assert.equal(g.code, 'OTO_OFFLINE');
 });
 
