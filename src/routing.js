@@ -110,9 +110,14 @@ export function matchGroup(quanTam) {
 
   if (isSchool) return byCode('TRUONG_HOC');
   if (isCenter) return byCode('TTAN');
+  // isEnterprise uu tien hon isOneToOne: "1-1" chi ta HINH THUC hoc (ca
+  // nhan hoa tung nguoi), con "doanh nghiep"/"cho cong ty" ta DOI TUONG
+  // tra tien/nguoi yeu cau (1 to chuc) - vi du "dao tao tieng Anh doanh
+  // nghiep 1-1 cho 4-5 senior manager" van la 1 hop dong doanh nghiep du
+  // moi nguoi hoc rieng 1-1.
+  if (isEnterprise) return byCode('DOANH_NGHIEP');
   if (isOneToOne && isOnline) return byCode('OTO_ONLINE');
   if (isOneToOne) return byCode('OTO_OFFLINE'); // mac dinh offline khi "1 kem 1" khong noi ro hinh thuc
-  if (isEnterprise) return byCode('DOANH_NGHIEP');
   if (isKid && isOnline) return byCode('KIDS_ONL');
   if (isKid && isTaiNha) return byCode('KIDS_OFF');
   if (isKid) return byCode('KIDS_ONL'); // mac dinh online khi la tre em nhung khong noi ro hinh thuc
