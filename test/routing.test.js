@@ -162,6 +162,13 @@ test('matchGroup: trung tam -> TTAN', () => {
   assert.equal(g.code, 'TTAN');
 });
 
+test('matchGroup: "Trung tam Anh ngu can GV cho chuong trinh tieu hoc" -> TTAN, khong phai TRUONG_HOC', () => {
+  const g = matchGroup(
+    'Trung tam Anh ngu can giao vien nuoc ngoai cho chuong trinh tieu hoc va tien tieu hoc, day theo giao trinh san, khoang 2-3 buoi/tuan',
+  );
+  assert.equal(g.code, 'TTAN');
+});
+
 test('matchGroup: "hoc theo lop, offline" (khong noi "trung tam") -> TTAN', () => {
   const g = matchGroup(
     'Khach quan tam hoc tieng Anh theo lop, offline tai Ha Noi; truoc do hoi ve tieng Anh chuyen nganh cong nghe thong tin va lich lop sap khai giang.',

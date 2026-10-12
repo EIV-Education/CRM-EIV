@@ -108,8 +108,13 @@ export function matchGroup(quanTam) {
   const isOneToOne = ONE_TO_ONE_RE.test(t) || ((containsPhrase(t, 'hoc kem') || isInterviewPrep) && !isKid);
   const isTaiNha = containsPhrase(t, 'tai nha') || containsPhrase(t, 'o nha');
 
-  if (isSchool) return byCode('TRUONG_HOC');
+  // isCenter uu tien hon isSchool: khi noi ro nguoi yeu cau la "trung
+  // tam" (vi du "Trung tam Anh ngu can GV cho chuong trinh tieu hoc"),
+  // "tieu hoc" chi ta DO TUOI/cap do hoc vien cua trung tam do, khong
+  // phai 1 truong hoc truc tiep yeu cau - tuong tu nguyen tac "tre mam
+  // non" (do tuoi) khac "truong mam non" (don vi) da ap dung o tren.
   if (isCenter) return byCode('TTAN');
+  if (isSchool) return byCode('TRUONG_HOC');
   // isEnterprise uu tien hon isOneToOne: "1-1" chi ta HINH THUC hoc (ca
   // nhan hoa tung nguoi), con "doanh nghiep"/"cho cong ty" ta DOI TUONG
   // tra tien/nguoi yeu cau (1 to chuc) - vi du "dao tao tieng Anh doanh
