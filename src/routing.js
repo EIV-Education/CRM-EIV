@@ -76,7 +76,12 @@ export function matchGroup(quanTam) {
     // co so/don vi (khong phai mo ta do tuoi tre) - an toan de suy ra
     // TRUONG_HOC ke ca khi co so do la "co so mam non" (khong co "truong").
     t.includes('cung cap giao vien') ||
-    t.includes('cung ung giao vien');
+    t.includes('cung ung giao vien') ||
+    // "co so mam non"/"co so mau giao" (co so = 1 don vi/co so giao duc,
+    // tuong duong "truong") can GV - cung la tin hieu TRUONG_HOC du khong
+    // dung dong tu "cung cap"/"cung ung" nhu tren.
+    containsPhrase(t, 'co so mam non') ||
+    containsPhrase(t, 'co so mau giao');
   // "hoc theo lop" (hoc theo dang lop/nhom, khong phai 1 kem 1) la mo ta
   // hinh thuc hoc kieu trung tam Anh ngu du khong noi thang "trung tam".
   const isCenter = containsPhrase(t, 'trung tam') || containsPhrase(t, 'theo lop');

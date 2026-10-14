@@ -147,6 +147,13 @@ test('matchGroup: "cung ung giao vien... co so mam non" (xin GV cho 1 co so, kho
   assert.equal(g.code, 'TRUONG_HOC');
 });
 
+test('matchGroup: "Co so mam non can tu van giao vien" (khong dung "cung cap"/"cung ung") -> TRUONG_HOC', () => {
+  const g = matchGroup(
+    'Co so mam non can tu van giao vien nuoc ngoai, dang hoi chi phi cho 3 hoac 5 buoi, trung binh 30 phut/tiet',
+  );
+  assert.equal(g.code, 'TRUONG_HOC');
+});
+
 test('matchGroup: "Tieng Anh lien ket cho hoc sinh Trung hoc co so" -> TRUONG_HOC', () => {
   const g = matchGroup('Tieng anh lien ket cho hoc sinh Trung hoc co so');
   assert.equal(g.code, 'TRUONG_HOC');
