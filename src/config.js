@@ -168,7 +168,9 @@ export const BRANCHES = [
     phuTrach: [
       { email: 'sale.hcm2@eiv.edu.vn', name: 'Nguyễn Thị Thiên Ân-Sale HCM' }
     ],
-    lienQuan: [{ email: 'lead.hcm@eiv.edu.vn', name: 'Nguyễn Tuấn Khôi-Lead HCM' }],
+    lienQuan: [{ email: 'lead.hcm@eiv.edu.vn', name: 'Lead HCM' },
+               { email: 'customerservice.hcm@eiv.edu.vn', name: 'Phan Thị Thùy Linh-SALE HCM' },
+              ],
   },
   {
     code: 'EIV_HN',
