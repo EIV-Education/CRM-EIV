@@ -238,6 +238,13 @@ test('matchGroup: "ngan hang de thi TOEIC cho cong ty" (khong noi "doanh nghiep"
   assert.equal(g.code, 'DOANH_NGHIEP');
 });
 
+test('matchGroup: "Tap doan cong nghe can test dau vao + on TOEIC/IELTS cho nhan su" -> DOANH_NGHIEP', () => {
+  const g = matchGroup(
+    'Tap doan cong nghe can: (1) to chuc test tieng Anh dau vao cho toan cong ty khoang 150-200 nhan su, (2) xay dung bai test rieng, (3) khoa on thi chung chi TOEIC/IELTS cho nhan su, so luong hoc tuy yeu cau tung vi tri.',
+  );
+  assert.equal(g.code, 'DOANH_NGHIEP');
+});
+
 test('matchGroup: "tieng Anh doanh nghiep 1-1 cho 4-5 senior manager" -> DOANH_NGHIEP (uu tien hon tin hieu 1-1)', () => {
   const g = matchGroup(
     'Tu van chuong trinh dao tao tieng Anh doanh nghiep 1-1 cho khoang 4-5 senior manager, hoc online hoac offline tuy chi phi',

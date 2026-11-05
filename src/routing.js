@@ -93,9 +93,14 @@ export function matchGroup(quanTam) {
   // la tieng Anh chuyen nganh phuc vu cong viec cua nguoi lon dang di lam -
   // xep chung nhom voi doanh nghiep (dao tao ky nang nghe nghiep), khac
   // voi tieng Anh giao tiep pho thong.
+  // "cong ty" (bat ke co "cho" ngay truoc hay khong, vi du "cho toan cong
+  // ty X nhan su") va "tap doan" (cong ty quy mo lon) la tin hieu doanh
+  // nghiep tuong duong "doanh nghiep", an toan vi trong ngu canh lead CRM
+  // nay 2 tu nay hau nhu luon chi 1 don vi kinh doanh dang hoi dich vu.
   const isEnterprise =
     t.includes('doanh nghiep') ||
-    containsPhrase(t, 'cho cong ty') ||
+    containsPhrase(t, 'cong ty') ||
+    containsPhrase(t, 'tap doan') ||
     containsPhrase(t, 'ho kinh doanh') ||
     containsPhrase(t, 'tieng anh nganh') ||
     containsPhrase(t, 'anh van nganh');
