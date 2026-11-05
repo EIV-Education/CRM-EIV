@@ -137,11 +137,20 @@ export function matchGroup(quanTam) {
   // nghiep 1-1 cho 4-5 senior manager" van la 1 hop dong doanh nghiep du
   // moi nguoi hoc rieng 1-1.
   if (isEnterprise) return byCode('DOANH_NGHIEP');
+  // isKid uu tien hon isOneToOne: "1 kem 1"/"1-1" chi ta HINH THUC hoc,
+  // con la tre em hay khong moi la dieu kien de xep KIDS_ONL/KIDS_OFF hay
+  // OTO_ONLINE/OTO_OFFLINE - vi du "be 7 tuoi hoc 1 kem 1" van la KIDS,
+  // khong phai OTO, du co so "1" ro rang.
+  if (isKid) {
+    // Neu noi ro CA 2 hinh thuc (online VA offline, vi du de so sanh gia)
+    // thi uu tien xep offline (hoc truc tiep tai nha/trung tam gan nha).
+    if (isOnline && isOffline) return byCode('KIDS_OFF');
+    if (isOnline) return byCode('KIDS_ONL');
+    if (isTaiNha || isOffline) return byCode('KIDS_OFF');
+    return byCode('KIDS_ONL'); // mac dinh online khi khong noi ro hinh thuc
+  }
   if (isOneToOne && isOnline) return byCode('OTO_ONLINE');
   if (isOneToOne) return byCode('OTO_OFFLINE'); // mac dinh offline khi "1 kem 1" khong noi ro hinh thuc
-  if (isKid && isOnline) return byCode('KIDS_ONL');
-  if (isKid && isTaiNha) return byCode('KIDS_OFF');
-  if (isKid) return byCode('KIDS_ONL'); // mac dinh online khi la tre em nhung khong noi ro hinh thuc
   return null;
 }
 

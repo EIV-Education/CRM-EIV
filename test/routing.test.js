@@ -164,11 +164,11 @@ test('matchGroup: THPT/tieu hoc (viet tat cap hoc) -> TRUONG_HOC', () => {
   assert.equal(matchGroup('Chuong trinh lien ket cho hoc sinh tieu hoc').code, 'TRUONG_HOC');
 });
 
-test('matchGroup: "...chua noi muc tieu hoc..." (muc tieu + hoc trung ngau nhien) khong duoc khop nham la TRUONG_HOC', () => {
+test('matchGroup: "be 7 tuoi hoc 1 kem 1 ca online+offline" -> KIDS_OFF (tre em uu tien hon 1-1, ca 2 hinh thuc -> offline)', () => {
   const g = matchGroup(
     'Phu huynh cho be 7 tuoi (lop 2) hoc tieng Anh 1 kem 1 voi giao vien nuoc ngoai. Muon nhan bao gia so bo cho ca hinh thuc online va offline de so sanh. Chua noi muc tieu hoc va khu vuc.',
   );
-  assert.notEqual(g.code, 'TRUONG_HOC');
+  assert.equal(g.code, 'KIDS_OFF');
 });
 
 test('matchGroup: trung tam -> TTAN', () => {
@@ -289,6 +289,16 @@ test('matchGroup: kid hoc tai nha -> KIDS_OFF', () => {
 test('matchGroup: "giao vien kem cho be lop 2" khong noi ro hinh thuc -> mac dinh KIDS_ONL', () => {
   const g = matchGroup('Tim giao vien kem be lop 2. Khach muon duoc tu van giao vien kem cho be tai Quan 12 TP HCM');
   assert.equal(g.code, 'KIDS_ONL');
+});
+
+test('matchGroup: "be...hoc 1 kem 1 online" -> KIDS_ONL (tre em uu tien hon tin hieu 1-1, van theo hinh thuc noi ro)', () => {
+  const g = matchGroup('Can gia su cho be hoc tieng Anh 1 kem 1, hoc online voi giao vien nuoc ngoai');
+  assert.equal(g.code, 'KIDS_ONL');
+});
+
+test('matchGroup: "be...1-1 truc tiep" -> KIDS_OFF (tre em uu tien hon tin hieu 1-1)', () => {
+  const g = matchGroup('Tim gia su cho be hoc 1-1 truc tiep tai nha');
+  assert.equal(g.code, 'KIDS_OFF');
 });
 
 test('matchGroup: "nhoc" hoc online -> KIDS_ONL (tu khoa than mat cho tre em)', () => {
