@@ -164,6 +164,13 @@ test('matchGroup: THPT/tieu hoc (viet tat cap hoc) -> TRUONG_HOC', () => {
   assert.equal(matchGroup('Chuong trinh lien ket cho hoc sinh tieu hoc').code, 'TRUONG_HOC');
 });
 
+test('matchGroup: "...chua noi muc tieu hoc..." (muc tieu + hoc trung ngau nhien) khong duoc khop nham la TRUONG_HOC', () => {
+  const g = matchGroup(
+    'Phu huynh cho be 7 tuoi (lop 2) hoc tieng Anh 1 kem 1 voi giao vien nuoc ngoai. Muon nhan bao gia so bo cho ca hinh thuc online va offline de so sanh. Chua noi muc tieu hoc va khu vuc.',
+  );
+  assert.notEqual(g.code, 'TRUONG_HOC');
+});
+
 test('matchGroup: trung tam -> TTAN', () => {
   const g = matchGroup('Trung tam ngoai ngu can hop tac');
   assert.equal(g.code, 'TTAN');

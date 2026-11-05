@@ -49,6 +49,12 @@ const KID_RE = /\b(kid|kids|be|tre em|thieu nhi|nhoc)\b/;
 // "lop 6", "lop 10"... la dau hieu ro rang ve hoc sinh (tuoi di hoc), an
 // toan hon nhieu so voi dung tu "con" don le (de trung "con"/"còn").
 const GRADE_RE = /\blop\s*\d{1,2}\b/;
+// "muc tieu hoc(...)" = "mục tiêu" (muc tieu, goal) + "học" (hoc, study)
+// dung canh nhau tinh co - sau khi bo dau, "tiêu" (muc tieu) va "tiểu"
+// (tieu hoc, cap hoc) deu thanh "tieu" nen vo tinh khop nham cum
+// "tieu hoc" (truong hoc). Phai loai truong hop nay truoc khi kiem
+// containsPhrase(t, 'tieu hoc').
+const FALSE_TIEU_HOC_RE = /\bmuc tieu hoc\b/;
 
 function byCode(code) {
   return GROUPS.find((g) => g.code === code) || null;
@@ -65,7 +71,7 @@ export function matchGroup(quanTam) {
     // 1 truong mam non/mau giao (2 y nghia rat khac nhau).
     containsPhrase(t, 'truong mam non') ||
     containsPhrase(t, 'truong mau giao') ||
-    containsPhrase(t, 'tieu hoc') ||
+    (containsPhrase(t, 'tieu hoc') && !FALSE_TIEU_HOC_RE.test(t)) ||
     containsPhrase(t, 'trung hoc co so') ||
     containsPhrase(t, 'trung hoc pho thong') ||
     containsPhrase(t, 'thcs') ||
