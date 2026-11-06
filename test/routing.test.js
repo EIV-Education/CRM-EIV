@@ -176,6 +176,13 @@ test('matchGroup: trung tam -> TTAN', () => {
   assert.equal(g.code, 'TTAN');
 });
 
+test('matchGroup: "be...chua hoc trung tam hay 1-1...ca online hay offline" -> KIDS_OFF, khong phai TTAN (phu dinh)', () => {
+  const g = matchGroup(
+    'Phu huynh cho be 6 tuoi hoc tieng Anh 1 kem 1 voi giao vien ban ngu. Be dang hoc truong song ngu, da giao tiep co ban duoc, chua hoc trung tam hay 1-1. Chua chon hoc online hay offline (da hoi chenh lech hoc phi giua 2 hinh thuc).',
+  );
+  assert.equal(g.code, 'KIDS_OFF');
+});
+
 test('matchGroup: "Trung tam Anh ngu can GV cho chuong trinh tieu hoc" -> TTAN, khong phai TRUONG_HOC', () => {
   const g = matchGroup(
     'Trung tam Anh ngu can giao vien nuoc ngoai cho chuong trinh tieu hoc va tien tieu hoc, day theo giao trinh san, khoang 2-3 buoi/tuan',

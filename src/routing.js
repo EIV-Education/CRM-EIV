@@ -55,6 +55,11 @@ const GRADE_RE = /\blop\s*\d{1,2}\b/;
 // "tieu hoc" (truong hoc). Phai loai truong hop nay truoc khi kiem
 // containsPhrase(t, 'tieu hoc').
 const FALSE_TIEU_HOC_RE = /\bmuc tieu hoc\b/;
+// "chua hoc trung tam"/"khong hoc trung tam" (phu dinh - mo ta lich su
+// CHUA tung hoc trung tam, khong phai dang xin hoc/hop tac voi trung
+// tam) khong duoc tinh la tin hieu TTAN. Gioi han pham vi ~20 ky tu va
+// khong vuot qua dau "." de tranh bat nham phu dinh o cau/y khac.
+const NEGATED_CENTER_RE = /\b(chua|khong)\b[^.]{0,20}\btrung tam\b/;
 
 function byCode(code) {
   return GROUPS.find((g) => g.code === code) || null;
@@ -90,7 +95,8 @@ export function matchGroup(quanTam) {
     containsPhrase(t, 'co so mau giao');
   // "hoc theo lop" (hoc theo dang lop/nhom, khong phai 1 kem 1) la mo ta
   // hinh thuc hoc kieu trung tam Anh ngu du khong noi thang "trung tam".
-  const isCenter = containsPhrase(t, 'trung tam') || containsPhrase(t, 'theo lop');
+  const isCenter =
+    (containsPhrase(t, 'trung tam') && !NEGATED_CENTER_RE.test(t)) || containsPhrase(t, 'theo lop');
   // "cho cong ty" (dich vu/giai phap phuc vu 1 cong ty) la tin hieu doanh
   // nghiep tuong duong "doanh nghiep" du khong dung dung tu nay. "ho kinh
   // doanh" (loai hinh kinh doanh ca nhan/gia dinh, khac cong ty ve phap
