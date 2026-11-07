@@ -183,6 +183,13 @@ test('matchGroup: "be...chua hoc trung tam hay 1-1...ca online hay offline" -> K
   assert.equal(g.code, 'KIDS_OFF');
 });
 
+test('matchGroup: "...co hoc tai trung tam khong..." (cau hoi, khong phai xin hoc trung tam) -> OTO_ONLINE, khong phai TTAN', () => {
+  const g = matchGroup(
+    'Nguoi di lam, hoc tieng Anh 1 kem 1 voi giao vien nuoc ngoai, muc tieu giao tiep trong cuoc song hang ngay. Chua chon hoc online hay offline. Khach hoi: hoc online dung thiet bi gi (laptop?), hoc offline co hoc tai trung tam khong va dia diem o TP.HCM, va hoc phi.',
+  );
+  assert.equal(g.code, 'OTO_ONLINE');
+});
+
 test('matchGroup: "Trung tam Anh ngu can GV cho chuong trinh tieu hoc" -> TTAN, khong phai TRUONG_HOC', () => {
   const g = matchGroup(
     'Trung tam Anh ngu can giao vien nuoc ngoai cho chuong trinh tieu hoc va tien tieu hoc, day theo giao trinh san, khoang 2-3 buoi/tuan',

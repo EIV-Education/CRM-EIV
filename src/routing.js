@@ -57,9 +57,14 @@ const GRADE_RE = /\blop\s*\d{1,2}\b/;
 const FALSE_TIEU_HOC_RE = /\bmuc tieu hoc\b/;
 // "chua hoc trung tam"/"khong hoc trung tam" (phu dinh - mo ta lich su
 // CHUA tung hoc trung tam, khong phai dang xin hoc/hop tac voi trung
-// tam) khong duoc tinh la tin hieu TTAN. Gioi han pham vi ~20 ky tu va
-// khong vuot qua dau "." de tranh bat nham phu dinh o cau/y khac.
-const NEGATED_CENTER_RE = /\b(chua|khong)\b[^.]{0,20}\btrung tam\b/;
+// tam) khong duoc tinh la tin hieu TTAN. Cau hoi kieu "co...trung
+// tam khong" (hoi lai xem offline nghia la hoc tai trung tam hay
+// khong, khong phai noi minh muon hoc trung tam) cung vay - bat ca 2
+// chieu "chua/khong" truoc VA "khong" ngay sau "trung tam". Gioi han
+// pham vi ~20 ky tu va khong vuot qua dau "." de tranh bat nham phu
+// dinh/cau hoi o cau/y khac.
+const NEGATED_CENTER_RE =
+  /(\b(chua|khong)\b[^.]{0,20}\btrung tam\b)|(\btrung tam\b[^.]{0,20}\bkhong\b)/;
 
 function byCode(code) {
   return GROUPS.find((g) => g.code === code) || null;
