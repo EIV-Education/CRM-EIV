@@ -65,6 +65,13 @@ const FALSE_TIEU_HOC_RE = /\bmuc tieu hoc\b/;
 // dinh/cau hoi o cau/y khac.
 const NEGATED_CENTER_RE =
   /(\b(chua|khong)\b[^.]{0,20}\btrung tam\b)|(\btrung tam\b[^.]{0,20}\bkhong\b)/;
+// "Truong <ten/loai truong> can tuyen giao vien" (vi du "Truong K-12
+// tai...TP.HCM can tuyen giao vien expat") - "truong" xuat hien o dau
+// cau roi cach mot doan (ten truong/dia danh) moi den dong tu tuyen
+// dung, khac voi "cung cap/cung ung giao vien" (dong tu ngay canh
+// "giao vien"). Khong dung [^.] de gioi han vi dia danh nhu "TP.HCM"
+// cung co dau "." - chi gioi han so ky tu (~60) de tranh bat nham xa.
+const SCHOOL_HIRING_RE = /\btruong\b.{0,60}\btuyen\b.{0,20}\bgiao vien\b/;
 
 function byCode(code) {
   return GROUPS.find((g) => g.code === code) || null;
@@ -97,7 +104,8 @@ export function matchGroup(quanTam) {
     // tuong duong "truong") can GV - cung la tin hieu TRUONG_HOC du khong
     // dung dong tu "cung cap"/"cung ung" nhu tren.
     containsPhrase(t, 'co so mam non') ||
-    containsPhrase(t, 'co so mau giao');
+    containsPhrase(t, 'co so mau giao') ||
+    SCHOOL_HIRING_RE.test(t);
   // "hoc theo lop" (hoc theo dang lop/nhom, khong phai 1 kem 1) la mo ta
   // hinh thuc hoc kieu trung tam Anh ngu du khong noi thang "trung tam".
   const isCenter =
