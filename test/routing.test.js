@@ -154,6 +154,13 @@ test('matchGroup: "Truong K-12...can tuyen giao vien expat" (truong tuyen truc t
   assert.equal(g.code, 'TRUONG_HOC');
 });
 
+test('matchGroup: "Truong K-12 can giao vien expat..." (khong dung "tuyen", chu "can") -> TRUONG_HOC', () => {
+  const g = matchGroup(
+    'Truong K-12 can giao vien expat ky hop dong lao dong truc tiep voi truong, day theo chuong trinh san co cua truong. Can gap: 1 giao vien mam non + 1 giao vien cap 2-3, nhan viec trong thang 12, lam full-time 40h/tuan. Sau do can khoang 15 giao vien nhan viec dau nam hoc sau. Khach hoi viec giao vien ky HDLD truc tiep voi truong (can chuyen vien xac nhan).',
+  );
+  assert.equal(g.code, 'TRUONG_HOC');
+});
+
 test('matchGroup: "Co so mam non can tu van giao vien" (khong dung "cung cap"/"cung ung") -> TRUONG_HOC', () => {
   const g = matchGroup(
     'Co so mam non can tu van giao vien nuoc ngoai, dang hoi chi phi cho 3 hoac 5 buoi, trung binh 30 phut/tiet',

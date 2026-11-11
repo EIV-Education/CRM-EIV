@@ -65,13 +65,18 @@ const FALSE_TIEU_HOC_RE = /\bmuc tieu hoc\b/;
 // dinh/cau hoi o cau/y khac.
 const NEGATED_CENTER_RE =
   /(\b(chua|khong)\b[^.]{0,20}\btrung tam\b)|(\btrung tam\b[^.]{0,20}\bkhong\b)/;
-// "Truong <ten/loai truong> can tuyen giao vien" (vi du "Truong K-12
-// tai...TP.HCM can tuyen giao vien expat") - "truong" xuat hien o dau
-// cau roi cach mot doan (ten truong/dia danh) moi den dong tu tuyen
-// dung, khac voi "cung cap/cung ung giao vien" (dong tu ngay canh
-// "giao vien"). Khong dung [^.] de gioi han vi dia danh nhu "TP.HCM"
-// cung co dau "." - chi gioi han so ky tu (~60) de tranh bat nham xa.
-const SCHOOL_HIRING_RE = /\btruong\b.{0,60}\btuyen\b.{0,20}\bgiao vien\b/;
+// "Truong <ten/loai truong> can/tuyen giao vien" (vi du "Truong K-12
+// can giao vien expat..." hoac "...can tuyen giao vien expat...") -
+// "truong" xuat hien o dau cau roi cach 1 doan (ten truong/dia danh)
+// moi den dong tu, khac voi "cung cap/cung ung giao vien" (dong tu
+// ngay canh "giao vien"). "tuyen" la dong tu tuyen dung ro rang nen
+// cho pham vi rong hon (~60 ky tu); "can" (can giao vien) mo ho hon -
+// cung co the la phu huynh dang noi ve truong HIEN TAI cua con roi
+// moi noi minh can gia su rieng - nen gioi han pham vi hep hon (~20
+// ky tu) de "truong" that su la CHU THE cua "can giao vien". Khong
+// dung [^.] de gioi han vi dia danh nhu "TP.HCM" cung co dau ".".
+const SCHOOL_HIRING_RE =
+  /(\btruong\b.{0,60}\btuyen\b.{0,20}\bgiao vien\b)|(\btruong\b.{0,20}\bcan\b.{0,15}\bgiao vien\b)/;
 
 function byCode(code) {
   return GROUPS.find((g) => g.code === code) || null;
