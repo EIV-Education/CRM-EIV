@@ -110,6 +110,11 @@ export function matchGroup(quanTam) {
     // dung dong tu "cung cap"/"cung ung" nhu tren.
     containsPhrase(t, 'co so mam non') ||
     containsPhrase(t, 'co so mau giao') ||
+    // "tieng anh lien ket" = thuat ngu chuong trinh Anh ngu lien ket VOI
+    // TRUONG (B2B), khong phai xin gia su ca nhan - an toan de suy ra
+    // TRUONG_HOC du khong co tu "truong" di kem.
+    containsPhrase(t, 'tieng anh lien ket') ||
+    containsPhrase(t, 'chuong trinh lien ket') ||
     SCHOOL_HIRING_RE.test(t);
   // "hoc theo lop" (hoc theo dang lop/nhom, khong phai 1 kem 1) la mo ta
   // hinh thuc hoc kieu trung tam Anh ngu du khong noi thang "trung tam".

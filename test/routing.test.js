@@ -168,6 +168,13 @@ test('matchGroup: "Co so mam non can tu van giao vien" (khong dung "cung cap"/"c
   assert.equal(g.code, 'TRUONG_HOC');
 });
 
+test('matchGroup: "Tieng Anh lien ket cho tre Mam non" (chuong trinh lien ket B2B, khong phai gia su ca nhan) -> TRUONG_HOC', () => {
+  const g = matchGroup(
+    'Quan tam: Tieng anh lien ket cho tre Mam non\nChuong trinh tieng Anh cho mam non: Noi dung chuong trinh, bao gia, hinh thuc trien khai va quan tri chat luong',
+  );
+  assert.equal(g.code, 'TRUONG_HOC');
+});
+
 test('matchGroup: "Tieng Anh lien ket cho hoc sinh Trung hoc co so" -> TRUONG_HOC', () => {
   const g = matchGroup('Tieng anh lien ket cho hoc sinh Trung hoc co so');
   assert.equal(g.code, 'TRUONG_HOC');
