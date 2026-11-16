@@ -54,7 +54,11 @@ const GRADE_RE = /\blop\s*\d{1,2}\b/;
 // (tieu hoc, cap hoc) deu thanh "tieu" nen vo tinh khop nham cum
 // "tieu hoc" (truong hoc). Phai loai truong hop nay truoc khi kiem
 // containsPhrase(t, 'tieu hoc').
-const FALSE_TIEU_HOC_RE = /\bmuc tieu hoc\b/;
+// "<so tuoi> tuoi (tieu hoc)" = "tieu hoc" chi DO TUOI/cap lop cua 1 be
+// CU THE (vi du "Be 8 tuoi (tieu hoc)..."), khong phai mo ta ve 1
+// truong/khoi hoc sinh noi chung - khac voi "hoc sinh tieu hoc"/"khoi
+// tieu hoc" (B2B, ve 1 nhom/truong).
+const FALSE_TIEU_HOC_RE = /\bmuc tieu hoc\b|\btuoi\b.{0,10}\btieu hoc\b/;
 // "chua hoc trung tam"/"khong hoc trung tam" (phu dinh - mo ta lich su
 // CHUA tung hoc trung tam, khong phai dang xin hoc/hop tac voi trung
 // tam) khong duoc tinh la tin hieu TTAN. Cau hoi kieu "co...trung
@@ -63,8 +67,13 @@ const FALSE_TIEU_HOC_RE = /\bmuc tieu hoc\b/;
 // chieu "chua/khong" truoc VA "khong" ngay sau "trung tam". Gioi han
 // pham vi ~20 ky tu va khong vuot qua dau "." de tranh bat nham phu
 // dinh/cau hoi o cau/y khac.
+// "da hoc...trung tam" (da tung hoc O TRUNG TAM TRUOC DAY - mo ta lich
+// su/nen tang, khong phai dang xin hoc/hop tac voi trung tam BAY GIO)
+// cung khong duoc tinh la tin hieu TTAN - vi du "da hoc tieng Anh o
+// trung tam, nghe noi tot. Muon hoc online 1 kem 1..." (yeu cau thuc su
+// la online 1-1, "trung tam" chi la qua khu).
 const NEGATED_CENTER_RE =
-  /(\b(chua|khong)\b[^.]{0,20}\btrung tam\b)|(\btrung tam\b[^.]{0,20}\bkhong\b)/;
+  /(\b(chua|khong)\b[^.]{0,20}\btrung tam\b)|(\btrung tam\b[^.]{0,20}\bkhong\b)|(\bda hoc\b.{0,30}\btrung tam\b)/;
 // "Truong <ten/loai truong> can/tuyen giao vien" (vi du "Truong K-12
 // can giao vien expat..." hoac "...can tuyen giao vien expat...") -
 // "truong" xuat hien o dau cau roi cach 1 doan (ten truong/dia danh)

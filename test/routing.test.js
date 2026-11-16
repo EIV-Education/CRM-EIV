@@ -211,6 +211,13 @@ test('matchGroup: "...co hoc tai trung tam khong..." (cau hoi, khong phai xin ho
   assert.equal(g.code, 'OTO_ONLINE');
 });
 
+test('matchGroup: "be...tieu hoc...da hoc...trung tam...Muon hoc online 1 kem 1" -> KIDS_ONL, khong phai TTAN/TRUONG_HOC (qua khu, khong phai yeu cau hien tai)', () => {
+  const g = matchGroup(
+    'Be 8 tuoi (tieu hoc), da hoc tieng Anh o trung tam, nghe noi tot. Muon hoc online 1 kem 1 voi giao vien nuoc ngoai. Muc tieu: giao tiep ro rang hon (be noi nhanh qua nen nghe khong ro), tang them tu vung. Can sap xep lich test dau vao va tu van lo trinh.',
+  );
+  assert.equal(g.code, 'KIDS_ONL');
+});
+
 test('matchGroup: "Trung tam Anh ngu can GV cho chuong trinh tieu hoc" -> TTAN, khong phai TRUONG_HOC', () => {
   const g = matchGroup(
     'Trung tam Anh ngu can giao vien nuoc ngoai cho chuong trinh tieu hoc va tien tieu hoc, day theo giao trinh san, khoang 2-3 buoi/tuan',
